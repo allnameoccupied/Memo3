@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/test_nav_graph"
+    app:startDestination="@id/test0_Main_nav">
+    <fragment
+        android:id="@+id/test0_Main_nav"
+        android:name="com.max.memo3.TestSubject.Test0_frag"
+        android:label="Test0_frag"
+        tools:layout="@layout/test0_frag">
+        <action
+            android:id="@+id/action_test0_frag_to_test1_frag"
+            app:destination="@id/test1_Button_nav" />
+        <action
+            android:id="@+id/action_test0_frag_to_test2_Timer"
+            app:destination="@id/test2_Timer_nav" />
+    </fragment>
+    <fragment
+        android:id="@+id/test1_Button_nav"
+        android:name="com.max.memo3.TestSubject.Test1_Button"
+        android:label="Test1_frag"
+        tools:layout="@layout/test1_frag" />
+    <fragment
+        android:id="@+id/test2_Timer_nav"
+        android:name="com.max.memo3.TestSubject.Test2_Timer"
+        android:label="Test2_Timer"
+        tools:layout="@layout/test2_frag"/>
+</navigation>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".TestSubject.Test0_Main">
+
+    <item
+        android:id="@+id/menu_test_item1"
+        android:title="test item 1"
+        android:orderInCategory="10"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/menu_test_item2"
+        android:title="test item 2"
+        android:orderInCategory="20"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/menu_test_button1"
+        android:title="test button 1"
+        android:icon="@drawable/ic_menu_test_icon1"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:title="test button 2"
+        android:id="@+id/menu_test_button2"
+        android:icon="@drawable/ic_menu_test_icon2"
+        app:showAsAction="ifRoom" />
+
+</menu>
