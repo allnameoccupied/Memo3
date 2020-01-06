@@ -25,7 +25,9 @@ public class MainActivity extends AppCompatActivity {
 
         //util init msg
         util.quickLog("main activity onCreate");
+        util.APP_CONTEXT = getApplicationContext();
         util.CURR_CONTEXT = this;
+        util.INIT();
 
         //toolbar 1
         Toolbar toolbar = findViewById(R.id.main_toolbar);

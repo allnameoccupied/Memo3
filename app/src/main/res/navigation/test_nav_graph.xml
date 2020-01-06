@@ -15,6 +15,9 @@
         <action
             android:id="@+id/action_test0_frag_to_test2_Timer"
             app:destination="@id/test2_Timer_nav" />
+        <action
+            android:id="@+id/action_test0_Main_nav_to_test3_flash_nav"
+            app:destination="@id/test3_flash_nav" />
     </fragment>
     <fragment
         android:id="@+id/test1_Button_nav"
@@ -26,4 +29,9 @@
         android:name="com.max.memo3.TestSubject.Test2_Timer"
         android:label="Test2_Timer"
         tools:layout="@layout/test2_frag"/>
+    <fragment
+        android:id="@+id/test3_flash_nav"
+        android:name="com.max.memo3.TestSubject.Test3_Flash"
+        android:label="Test3_Flash"
+        tools:layout="@layout/test0_frag" />
 </navigation>

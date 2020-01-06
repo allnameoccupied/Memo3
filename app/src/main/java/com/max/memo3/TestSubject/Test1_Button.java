@@ -14,6 +14,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
+//Button test
+//used util quicklog
 public class Test1_Button extends Fragment {
     //var
     private Test_ViewModel viewModel;

@@ -27,6 +27,8 @@ public class Test0_Main extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test0_main);
         viewModel = ViewModelProviders.of(this).get(Test_ViewModel.class);
+
+        //util init
         util.CURR_CONTEXT = this;
     }
 

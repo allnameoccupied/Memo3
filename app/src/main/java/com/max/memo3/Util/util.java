@@ -13,7 +13,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.hardware.Sensor;
+import android.hardware.camera2.CameraAccessException;
+import android.hardware.camera2.CameraManager;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkInfo;
@@ -21,6 +24,7 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.BatteryManager;
 import android.os.Build;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.PersistableBundle;
 import android.os.VibrationEffect;
@@ -68,6 +72,7 @@ public class util {
 
     public static void INIT(){
         init_Vibrator();
+        init_Camera();
         init_BroadcastReceiver();
         init_Notification();
         init_Calender();
@@ -287,26 +292,117 @@ public class util {
     private static void init_Vibrator(){
         vibrator = (Vibrator) APP_CONTEXT.getSystemService(Context.VIBRATOR_SERVICE);
     }
-    public static boolean makeVibrator(long ms, int amplitude){
-        vibrator.cancel();
+    public static boolean makeVibrate(long ms){
+////        vibrator.cancel();
+//        stopVibrator();
+//        vibrator.vibrate(VibrationEffect.createOneShot(ms,VibrationEffect.DEFAULT_AMPLITUDE));
+//        return true;
+        return makeVibrate(ms,VibrationEffect.DEFAULT_AMPLITUDE);
+    }
+    public static boolean makeVibrate(long ms, int amplitude){
+//        vibrator.cancel();
+        stopVibrator();
         vibrator.vibrate(VibrationEffect.createOneShot(ms,amplitude));
         return true;
     }
-    public static boolean makeVibrator(long[] ms, int[] amplitude, int repeat){
+    public static boolean makeVibrate(long[] ms, int[] amplitude, int repeat){
         if (ms.length!=amplitude.length){
             return false;
         }
-        vibrator.cancel();
+//        vibrator.cancel();
+        stopVibrator();
         vibrator.vibrate(VibrationEffect.createWaveform(ms,amplitude,repeat));
         return true;
     }
-    public static boolean makeVibrator(long[] ms, int repeat){
-        vibrator.cancel();
+    public static boolean makeVibrate(long[] ms, int repeat){
+//        vibrator.cancel();
+        stopVibrator();
         vibrator.vibrate(VibrationEffect.createWaveform(ms,repeat));
         return true;
     }
     public static void stopVibrator(){
         vibrator.cancel();
+    }
+
+    //COUNT DOWN TIMER
+    //interval will run once on start
+    public static abstract class CountDownTimerImplementation{
+        public abstract void onTick(long ms_untilFinish);
+        public abstract void onFinish();
+    }
+    public static void makeCountDownTimer(long duration_ms, long interval_ms, CountDownTimerImplementation implementation){
+        new CountDownTimer(duration_ms,interval_ms) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                implementation.onTick(millisUntilFinished);
+            }
+
+            @Override
+            public void onFinish() {
+                implementation.onFinish();
+            }
+        }.start();
+    }
+    public static void makeCountDownTimer_Xinterval(long duration_ms, CountDownTimerImplementation implementation){
+        new CountDownTimer(duration_ms,duration_ms+5) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                implementation.onTick(millisUntilFinished);
+            }
+
+            @Override
+            public void onFinish() {
+                implementation.onFinish();
+            }
+        }.start();
+    }
+
+    //TIMER
+    //daemon = end autoly if all other non-daemon ended
+    public static void makeTimer_daemon(long delay, TimerTask timerTask){
+        new Timer(true).schedule(timerTask,delay);
+    }
+    public static void makeTimer_Xdaemon(long delay, TimerTask timerTask){
+        new Timer(false).schedule(timerTask,delay);
+    }
+
+    //CAMERA + FLASH
+    //TODO camera later
+    private static CameraManager cameraManager;
+    private static String flashlightID;
+    private static boolean flashOnNow = false;
+    private static void init_Camera() {
+        cameraManager = (CameraManager) APP_CONTEXT.getSystemService(Context.CAMERA_SERVICE);
+        try {
+            if (APP_CONTEXT.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)) {
+                flashlightID = cameraManager.getCameraIdList()[0];
+            } else {
+                makeToast("no flashlight on this device");
+            }
+        } catch(CameraAccessException e){
+            e.printStackTrace();
+        }
+    }
+    public static void makeFlash(boolean set_to_on){
+        if (flashlightID==null){
+            return;
+        }
+        try {
+            cameraManager.setTorchMode(flashlightID,set_to_on);
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
+        }
+        flashOnNow = set_to_on;
+    }
+    public static void makeFlash_ON(){
+        makeFlash(true);
+    }
+    public static void makeFlash_OFF(){
+        makeFlash(false);
+    }
+    public static void makeFlash_toggle(){
+        flashOnNow = !flashOnNow;
+        makeFlash(flashOnNow);
     }
 
     //BROADCAST RECEIVER

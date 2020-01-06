@@ -47,6 +47,7 @@ public class Test0_frag extends Fragment {
         //button to test
         view.findViewById(R.id.test0to1).setOnClickListener(Test0_frag.this::onButtonClick);
         view.findViewById(R.id.test0to2).setOnClickListener(Test0_frag.this::onButtonClick);
+        view.findViewById(R.id.test0to3).setOnClickListener(Test0_frag.this::onButtonClick);
     }
 
     private void onButtonClick(View view){
@@ -56,6 +57,9 @@ public class Test0_frag extends Fragment {
                 break;
             case R.id.test0to2:
                 navController.navigate(R.id.test2_Timer_nav);
+                break;
+            case R.id.test0to3:
+                navController.navigate(R.id.test3_flash_nav);
                 break;
         }
     }
