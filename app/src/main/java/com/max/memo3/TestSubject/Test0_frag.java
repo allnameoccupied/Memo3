@@ -48,6 +48,7 @@ public class Test0_frag extends Fragment {
         view.findViewById(R.id.test0to1).setOnClickListener(Test0_frag.this::onButtonClick);
         view.findViewById(R.id.test0to2).setOnClickListener(Test0_frag.this::onButtonClick);
         view.findViewById(R.id.test0to3).setOnClickListener(Test0_frag.this::onButtonClick);
+        view.findViewById(R.id.test0to4).setOnClickListener(Test0_frag.this::onButtonClick);
     }
 
     private void onButtonClick(View view){
@@ -60,6 +61,9 @@ public class Test0_frag extends Fragment {
                 break;
             case R.id.test0to3:
                 navController.navigate(R.id.test3_flash_nav);
+                break;
+            case R.id.test0to4:
+                navController.navigate(R.id.test4_Firestore_nav);
                 break;
         }
     }

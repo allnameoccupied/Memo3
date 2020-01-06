@@ -18,6 +18,9 @@
         <action
             android:id="@+id/action_test0_Main_nav_to_test3_flash_nav"
             app:destination="@id/test3_flash_nav" />
+        <action
+            android:id="@+id/action_test0_Main_nav_to_test4_Firestore"
+            app:destination="@id/test4_Firestore_nav" />
     </fragment>
     <fragment
         android:id="@+id/test1_Button_nav"
@@ -34,4 +37,9 @@
         android:name="com.max.memo3.TestSubject.Test3_Flash"
         android:label="Test3_Flash"
         tools:layout="@layout/test0_frag" />
+    <fragment
+        android:id="@+id/test4_Firestore_nav"
+        android:name="com.max.memo3.TestSubject.Test4_Firestore"
+        android:label="Test4_Firestore"
+        tools:layout="@layout/test4_frag"/>
 </navigation>
