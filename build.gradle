@@ -15,6 +15,7 @@ buildscript {
         // in the individual module build.gradle files
         classpath "io.realm:realm-gradle-plugin:7.0.0-beta-SNAPSHOT"
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:2.1.0"
+        classpath 'com.google.gms:google-services:4.3.3'
     }
 }
 
