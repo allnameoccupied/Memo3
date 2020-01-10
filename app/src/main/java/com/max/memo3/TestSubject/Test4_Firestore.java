@@ -25,6 +25,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
 //google sign in for android https://developers.google.com/identity/sign-in/android/start-integrating
+//google sign in SCOPES from here https://developers.google.com/identity/protocols/googlescopes
 public class Test4_Firestore extends Fragment {
     //var
     private Test_ViewModel viewModel;
@@ -44,6 +45,8 @@ public class Test4_Firestore extends Fragment {
 //                .requestIdToken(Conf_Info.WEB_CLIENT_GOOGLE_SERVICE)  //work
 //                .requestIdToken(Conf_Info.OAuth_CLIENT)  //not work
                 .requestIdToken(Conf_Info.OAuth_CLIENT_TEST4)  //work
+                .requestServerAuthCode(Conf_Info.OAuth_CLIENT_TEST4)
+                .requestScopes(new Scope("https://www.googleapis.com/auth/calendar"),new Scope("https://www.googleapis.com/auth/youtube.readonly"))
                 .build();
         googleSignInClient = GoogleSignIn.getClient(getContext(),googleSignInOptions);
     }
@@ -106,21 +109,22 @@ public class Test4_Firestore extends Fragment {
         if (account==null){
             util.quickLog("no google ac logined");
         } else {
+            util.quickLog("");
             util.quickLog(account.getDisplayName());
 //            util.quickLog(account.getFamilyName());
 //            util.quickLog(account.getGivenName());
             util.quickLog(account.getEmail());
             util.quickLog(account.getId());
             util.quickLog(account.getIdToken());
-//            util.quickLog(account.getServerAuthCode());
-//            util.quickLog(account.getAccount()==null?"Null":"XNull");
+            util.quickLog(account.getServerAuthCode());
+            util.quickLog(account.getAccount()==null);
 //            util.quickLog(account.getAccount().name);
 //            util.quickLog(account.getAccount().type);
-//            util.quickLog(account.getPhotoUrl().toString());
+            util.quickLog(account.getPhotoUrl().toString());
             util.quickLog(account.getRequestedScopes().size());
 //            account.getRequestedScopes().forEach(scope -> util.quickLog(scope.toString()));
             util.quickLog(account.getGrantedScopes().size());
-//            account.getGrantedScopes().forEach(scope -> util.quickLog(scope.toString()));
+            account.getGrantedScopes().forEach(scope -> util.quickLog(scope.toString()));
         }
     }
 
