@@ -154,7 +154,7 @@ public class util {
         ASSERT
     }
     public static void quickLog(String message){
-        Log.i(LOG_TAG,message);
+        Log.i(LOG_TAG,message!=null?message:"Null");
     }
     public static void makeLog(SERIOUS_LEVEL level, String message){
         switch (level){

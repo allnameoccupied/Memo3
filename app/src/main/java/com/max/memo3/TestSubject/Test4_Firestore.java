@@ -39,7 +39,11 @@ public class Test4_Firestore extends Fragment {
         viewModel = ViewModelProviders.of(requireActivity()).get(Test_ViewModel.class);
         googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestProfile()
-                .requestIdToken(Conf_Info.OAuth_CLIENT_TEST4)
+                .requestEmail()
+//                .requestIdToken(Conf_Info.WEB_CLIENT_GOOGLE_SIGNIN)  //work   //OAuth 2.0 client IDs && type==web application will work
+//                .requestIdToken(Conf_Info.WEB_CLIENT_GOOGLE_SERVICE)  //work
+//                .requestIdToken(Conf_Info.OAuth_CLIENT)  //not work
+                .requestIdToken(Conf_Info.OAuth_CLIENT_TEST4)  //work
                 .build();
         googleSignInClient = GoogleSignIn.getClient(getContext(),googleSignInOptions);
     }
@@ -60,17 +64,19 @@ public class Test4_Firestore extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         view.findViewById(R.id.test4_button1).setOnClickListener(this::test4_button1_onclick);
-        account = GoogleSignIn.getLastSignedInAccount(getContext());
+        account = GoogleSignIn.getLastSignedInAccount(getActivity());
         ((TextView)view.findViewById(R.id.test4_textView1)).setText(account==null?"Null":account.getDisplayName());
         ((SignInButton)view.findViewById(R.id.test4_google_signin)).setSize(SignInButton.SIZE_STANDARD);
         view.findViewById(R.id.test4_google_signin).setOnClickListener(this::test4_googlelogin_onclick);
         view.findViewById(R.id.test4_button2).setOnClickListener(this::test4_button2_onclick);
+        view.findViewById(R.id.test4_button3).setOnClickListener(this::test4_button3_onclick);
+        view.findViewById(R.id.test4_button4).setOnClickListener(this::test4_button4_onclick);
     }
 
     private void test4_button1_onclick(View view){
 //        util.quickLog(getActivity().toString());
 //        util.quickLog(getContext().toString());
-        account = GoogleSignIn.getLastSignedInAccount(getContext());
+        account = GoogleSignIn.getLastSignedInAccount(getActivity());
         util.quickLog(account==null);
     }
 
@@ -86,6 +92,7 @@ public class Test4_Firestore extends Fragment {
         if (requestCode == 6128){
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
+                util.quickLog(task.isSuccessful());
                 account = task.getResult(ApiException.class);
             } catch (ApiException e){
                 util.quickLog(e.getMessage());
@@ -95,6 +102,7 @@ public class Test4_Firestore extends Fragment {
     }
 
     private void test4_button2_onclick(View view){
+        account = GoogleSignIn.getLastSignedInAccount(getActivity());
         if (account==null){
             util.quickLog("no google ac logined");
         } else {
@@ -103,7 +111,7 @@ public class Test4_Firestore extends Fragment {
 //            util.quickLog(account.getGivenName());
             util.quickLog(account.getEmail());
             util.quickLog(account.getId());
-            util.quickLog(account.getIdToken()==null?"Null":account.getIdToken());
+            util.quickLog(account.getIdToken());
 //            util.quickLog(account.getServerAuthCode());
 //            util.quickLog(account.getAccount()==null?"Null":"XNull");
 //            util.quickLog(account.getAccount().name);
@@ -114,5 +122,17 @@ public class Test4_Firestore extends Fragment {
             util.quickLog(account.getGrantedScopes().size());
 //            account.getGrantedScopes().forEach(scope -> util.quickLog(scope.toString()));
         }
+    }
+
+    private void test4_button3_onclick(View view){
+//        util.quickLog("asdf");
+        googleSignInClient.signOut().addOnCompleteListener(getActivity(),task -> util.quickLog("sign out ed"));
+        ((TextView)getActivity().findViewById(R.id.test4_textView1)).setText("Null");
+    }
+
+    private void test4_button4_onclick(View view){
+//        util.quickLog("asdf");
+        googleSignInClient.revokeAccess().addOnCompleteListener(getActivity(),task -> util.quickLog("disconnect ed"));
+        ((TextView)getActivity().findViewById(R.id.test4_textView1)).setText("Null");
     }
 }
