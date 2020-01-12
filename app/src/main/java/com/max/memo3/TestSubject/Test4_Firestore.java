@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.firebase.ui.auth.AuthUI;
+import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -15,14 +17,21 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.max.memo3.Confidential.Conf_Info;
 import com.max.memo3.R;
 import com.max.memo3.Util.util;
+
+import java.util.Arrays;
+import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
+
+import static android.app.Activity.RESULT_OK;
 
 //google sign in for android https://developers.google.com/identity/sign-in/android/start-integrating
 //google sign in SCOPES from here https://developers.google.com/identity/protocols/googlescopes
@@ -32,6 +41,8 @@ public class Test4_Firestore extends Fragment {
     private GoogleSignInOptions googleSignInOptions;
     private GoogleSignInClient googleSignInClient;
     private GoogleSignInAccount account;
+
+    private FirebaseUser firebaseUser;
 
     //func
     @Override
@@ -74,6 +85,12 @@ public class Test4_Firestore extends Fragment {
         view.findViewById(R.id.test4_button2).setOnClickListener(this::test4_button2_onclick);
         view.findViewById(R.id.test4_button3).setOnClickListener(this::test4_button3_onclick);
         view.findViewById(R.id.test4_button4).setOnClickListener(this::test4_button4_onclick);
+        view.findViewById(R.id.test4_button5).setOnClickListener(this::test4_button5_onclick);
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        ((TextView)view.findViewById(R.id.test4_textView2)).setText(firebaseUser==null?"Null":firebaseUser.getDisplayName());
+        view.findViewById(R.id.test4_button6).setOnClickListener(this::test4_button6_onclick);
+        view.findViewById(R.id.test4_button7).setOnClickListener(this::test4_button7_onclick);
+        view.findViewById(R.id.test4_button8).setOnClickListener(this::test4_button8_onclick);
     }
 
     private void test4_button1_onclick(View view){
@@ -101,6 +118,17 @@ public class Test4_Firestore extends Fragment {
                 util.quickLog(e.getMessage());
             }
             ((TextView)getActivity().findViewById(R.id.test4_textView1)).setText(account==null?"Null":account.getDisplayName());
+        }
+        if (requestCode == 6129){
+            IdpResponse response = IdpResponse.fromResultIntent(data);
+            if (resultCode==RESULT_OK){
+                firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+                ((TextView)getActivity().findViewById(R.id.test4_textView2)).setText(firebaseUser.getDisplayName());
+            } else if (response==null){
+                util.quickLog("you cancelled it right?");
+            } else {
+                util.quickLog(response.getError().getErrorCode());
+            }
         }
     }
 
@@ -138,5 +166,44 @@ public class Test4_Firestore extends Fragment {
 //        util.quickLog("asdf");
         googleSignInClient.revokeAccess().addOnCompleteListener(getActivity(),task -> util.quickLog("disconnect ed"));
         ((TextView)getActivity().findViewById(R.id.test4_textView1)).setText("Null");
+    }
+
+    private void test4_button5_onclick(View view){
+        List<AuthUI.IdpConfig> providers = Arrays.asList(
+                new AuthUI.IdpConfig.GoogleBuilder().build()
+        );
+        startActivityForResult(
+                AuthUI.getInstance().createSignInIntentBuilder().setAvailableProviders(providers).build(),6129
+        );
+        //handled above
+    }
+
+    private void test4_button6_onclick(View view){
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (firebaseUser==null){
+            util.quickLog("no firebase user login ed");
+        } else {
+            util.quickLog("");
+            util.quickLog(firebaseUser.getDisplayName());
+            util.quickLog(firebaseUser.getEmail());
+            util.quickLog(firebaseUser.getPhoneNumber());
+            util.quickLog(firebaseUser.getProviderId());
+            util.quickLog(firebaseUser.getUid());
+            util.quickLog(firebaseUser.isAnonymous());
+        }
+    }
+
+    private void test4_button7_onclick(View view){
+        AuthUI.getInstance().signOut(getActivity()).addOnCompleteListener(task -> {
+            util.quickLog("firebase sign out ed");
+            ((TextView)view.findViewById(R.id.test4_textView2)).setText("Null");
+        });
+    }
+
+    private void test4_button8_onclick(View view){
+        AuthUI.getInstance().delete(getActivity()).addOnCompleteListener(task -> {
+            util.quickLog("firebase disconnect ed");
+            ((TextView)view.findViewById(R.id.test4_textView2)).setText("Null");
+        });
     }
 }

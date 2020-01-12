@@ -44,5 +44,7 @@ dependencies {
     //go to https://firebase.google.com/docs/android/setup#available-libraries
     //for extra api from firebase
     implementation 'com.google.firebase:firebase-analytics:17.2.1'
+    implementation 'com.google.firebase:firebase-auth:19.2.0'
     implementation 'com.google.firebase:firebase-firestore:21.3.1'
+    implementation 'com.firebaseui:firebase-ui-auth:4.3.1'
 }
