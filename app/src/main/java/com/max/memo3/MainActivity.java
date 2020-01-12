@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         //util init msg
-        util.quickLog("main activity onCreate");
+        util.quickLog("STARTSTART GOGOGO");
         util.APP_CONTEXT = getApplicationContext();
         util.CURR_CONTEXT = this;
         util.INIT();

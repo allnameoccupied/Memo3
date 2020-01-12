@@ -19,6 +19,7 @@ import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 import com.max.memo3.Confidential.Conf_Info;
 import com.max.memo3.R;
 import com.max.memo3.Util.util;
@@ -97,7 +98,7 @@ public class Test4_Firestore extends Fragment {
 //        util.quickLog(getActivity().toString());
 //        util.quickLog(getContext().toString());
         account = GoogleSignIn.getLastSignedInAccount(getActivity());
-        util.quickLog(account==null);
+        util.quickLog("google not sign in ed account "+(account==null));
     }
 
     private void test4_googlelogin_onclick(View view){
@@ -124,6 +125,8 @@ public class Test4_Firestore extends Fragment {
             if (resultCode==RESULT_OK){
                 firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
                 ((TextView)getActivity().findViewById(R.id.test4_textView2)).setText(firebaseUser.getDisplayName());
+                account = GoogleSignIn.getLastSignedInAccount(getActivity());
+                ((TextView)getActivity().findViewById(R.id.test4_textView1)).setText(account.getDisplayName());
             } else if (response==null){
                 util.quickLog("you cancelled it right?");
             } else {
@@ -137,7 +140,7 @@ public class Test4_Firestore extends Fragment {
         if (account==null){
             util.quickLog("no google ac logined");
         } else {
-            util.quickLog("");
+            util.quickLog(".");
             util.quickLog(account.getDisplayName());
 //            util.quickLog(account.getFamilyName());
 //            util.quickLog(account.getGivenName());
@@ -169,13 +172,32 @@ public class Test4_Firestore extends Fragment {
     }
 
     private void test4_button5_onclick(View view){
-        List<AuthUI.IdpConfig> providers = Arrays.asList(
-                new AuthUI.IdpConfig.GoogleBuilder().build()
-        );
-        startActivityForResult(
-                AuthUI.getInstance().createSignInIntentBuilder().setAvailableProviders(providers).build(),6129
-        );
-        //handled above
+        //using default google login setup
+//        List<AuthUI.IdpConfig> providers = Arrays.asList(
+//                new AuthUI.IdpConfig.GoogleBuilder().build()
+//        );
+//        startActivityForResult(
+//                AuthUI.getInstance().createSignInIntentBuilder().setAvailableProviders(providers).build(),6129
+//        );
+//        //handled above
+
+        //using custom google login setup  (google sign in need IDtoken)
+        account = GoogleSignIn.getLastSignedInAccount(getActivity());
+        if (account==null){
+            util.quickLog("no google ac sign in ed, no login");
+            return;
+        }
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        firebaseAuth.signInWithCredential(GoogleAuthProvider.getCredential(account.getIdToken(),null))
+                .addOnCompleteListener(getActivity(),task -> {
+                    if (task.isSuccessful()){
+                        util.quickLog("firebase login ed");
+                        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+                        ((TextView)getActivity().findViewById(R.id.test4_textView2)).setText(firebaseUser.getDisplayName());
+                    } else {
+                        util.quickLog("asdf");
+                    }
+                });
     }
 
     private void test4_button6_onclick(View view){
@@ -183,27 +205,38 @@ public class Test4_Firestore extends Fragment {
         if (firebaseUser==null){
             util.quickLog("no firebase user login ed");
         } else {
-            util.quickLog("");
+            test4_button2_onclick(view);
+            util.quickLog(".");
             util.quickLog(firebaseUser.getDisplayName());
             util.quickLog(firebaseUser.getEmail());
             util.quickLog(firebaseUser.getPhoneNumber());
             util.quickLog(firebaseUser.getProviderId());
             util.quickLog(firebaseUser.getUid());
-            util.quickLog(firebaseUser.isAnonymous());
+            util.quickLog(firebaseUser.getIdToken(false).getResult().getToken());
+            util.quickLog(firebaseUser.getPhotoUrl().toString());
+            firebaseUser.getProviderData().forEach(o -> util.quickLog(o.toString()));
+            util.quickLog(firebaseUser.getMetadata().getCreationTimestamp());
+            util.quickLog(firebaseUser.getMetadata().getLastSignInTimestamp());
         }
     }
 
     private void test4_button7_onclick(View view){
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        util.quickLog(firebaseUser==null);
         AuthUI.getInstance().signOut(getActivity()).addOnCompleteListener(task -> {
             util.quickLog("firebase sign out ed");
-            ((TextView)view.findViewById(R.id.test4_textView2)).setText("Null");
+            ((TextView)getActivity().findViewById(R.id.test4_textView2)).setText("Null");
+            ((TextView)getActivity().findViewById(R.id.test4_textView1)).setText("Null");
         });
     }
 
     private void test4_button8_onclick(View view){
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        util.quickLog(firebaseUser==null);
         AuthUI.getInstance().delete(getActivity()).addOnCompleteListener(task -> {
             util.quickLog("firebase disconnect ed");
-            ((TextView)view.findViewById(R.id.test4_textView2)).setText("Null");
+            ((TextView)getActivity().findViewById(R.id.test4_textView2)).setText("Null");
+            ((TextView)getActivity().findViewById(R.id.test4_textView1)).setText("Null");
         });
     }
 }
