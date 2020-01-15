@@ -20,12 +20,15 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.max.memo3.Confidential.Conf_Info;
 import com.max.memo3.R;
 import com.max.memo3.Util.util;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -44,6 +47,8 @@ public class Test4_Firestore extends Fragment {
     private GoogleSignInAccount account;
 
     private FirebaseUser firebaseUser;
+
+    private FirebaseFirestore firestore;
 
     //func
     @Override
@@ -78,6 +83,7 @@ public class Test4_Firestore extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        //google login
         view.findViewById(R.id.test4_button1).setOnClickListener(this::test4_button1_onclick);
         account = GoogleSignIn.getLastSignedInAccount(getActivity());
         ((TextView)view.findViewById(R.id.test4_textView1)).setText(account==null?"Null":account.getDisplayName());
@@ -87,13 +93,19 @@ public class Test4_Firestore extends Fragment {
         view.findViewById(R.id.test4_button3).setOnClickListener(this::test4_button3_onclick);
         view.findViewById(R.id.test4_button4).setOnClickListener(this::test4_button4_onclick);
         view.findViewById(R.id.test4_button5).setOnClickListener(this::test4_button5_onclick);
+        //firebase login
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         ((TextView)view.findViewById(R.id.test4_textView2)).setText(firebaseUser==null?"Null":firebaseUser.getDisplayName());
         view.findViewById(R.id.test4_button6).setOnClickListener(this::test4_button6_onclick);
         view.findViewById(R.id.test4_button7).setOnClickListener(this::test4_button7_onclick);
         view.findViewById(R.id.test4_button8).setOnClickListener(this::test4_button8_onclick);
+        //firestore
+        firestore = FirebaseFirestore.getInstance();
+        view.findViewById(R.id.test4_button9).setOnClickListener(this::test4_button9_onclick);
+        view.findViewById(R.id.test4_button10).setOnClickListener(this::test4_button10_onclick);
     }
 
+    //google login
     private void test4_button1_onclick(View view){
 //        util.quickLog(getActivity().toString());
 //        util.quickLog(getContext().toString());
@@ -171,6 +183,7 @@ public class Test4_Firestore extends Fragment {
         ((TextView)getActivity().findViewById(R.id.test4_textView1)).setText("Null");
     }
 
+    //firebase login
     private void test4_button5_onclick(View view){
         //using default google login setup
 //        List<AuthUI.IdpConfig> providers = Arrays.asList(
@@ -238,5 +251,22 @@ public class Test4_Firestore extends Fragment {
             ((TextView)getActivity().findViewById(R.id.test4_textView2)).setText("Null");
             ((TextView)getActivity().findViewById(R.id.test4_textView1)).setText("Null");
         });
+    }
+
+    //firestore
+    private void test4_button9_onclick(View view){
+        Map<String,Object> test_data = new HashMap<>();
+        test_data.put("first","Max");
+        test_data.put("second","test4");
+        test_data.put("third",1234);
+
+        firestore.collection("test4")
+                .add(test_data)
+                .addOnSuccessListener(documentReference -> util.quickLog("test4 successfully add data"))
+                .addOnFailureListener(e -> util.quickLog("test4 failed to add data"));
+    }
+
+    private void test4_button10_onclick(View view){
+
     }
 }
