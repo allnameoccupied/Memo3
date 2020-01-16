@@ -187,6 +187,7 @@ public class util {
     public static void quickLog(boolean message){
         quickLog(message?"TRUE":"FALSE");
     }
+    public static void quickLog(Object message){quickLog(message.toString());}
 
     //TOAST + LOG
     public static void makeToastLog(SERIOUS_LEVEL level, String message){
