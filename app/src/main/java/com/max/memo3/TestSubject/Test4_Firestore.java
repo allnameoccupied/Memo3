@@ -21,10 +21,13 @@ import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.SetOptions;
 import com.max.memo3.Confidential.Conf_Info;
 import com.max.memo3.R;
 import com.max.memo3.Util.util;
@@ -263,37 +266,44 @@ public class Test4_Firestore extends Fragment {
     //firestore
     private void test4_button9_onclick(View view){
         //1st test
-//        Map<String,Object> test_data = new HashMap<>();
-//        test_data.put("first","Max");
-//        test_data.put("second","test4");
-//        test_data.put("third",1234);
-//
-//        firestore.collection("test4")
-//                .add(test_data)
-//                .addOnSuccessListener(documentReference -> util.quickLog("test4_1 successfully add data"))
-//                .addOnFailureListener(e -> util.quickLog("test4_1 failed to add data"));
+        /**
+        Map<String,Object> test_data = new HashMap<>();
+        test_data.put("first","Max");
+        test_data.put("second","test4");
+        test_data.put("third",1234);
+
+        firestore.collection("test4")
+                .add(test_data)
+                .addOnSuccessListener(documentReference -> util.quickLog("test4_1 successfully add data"))
+                .addOnFailureListener(e -> util.quickLog("test4_1 failed to add data"));
+         */
 
         //2nd test
-//        Map<String,Object> test_data = new HashMap<>();
-//        test_data.put("qwer","qwer");
-//        test_data.put("asdf","asdf");
-//        test_data.put("zxcv",1234);
-//
-//        firestore.collection("test4").document("test4_2")
-//                .set(test_data)
-//                .addOnSuccessListener(documentReference -> util.quickLog("test4_2 successfully add data"))
-//                .addOnFailureListener(e -> util.quickLog("test4_2 failed to add data"));
+        /**
+        Map<String,Object> test_data = new HashMap<>();
+        test_data.put("qwer","qwer");
+        test_data.put("asdf","asdf");
+        test_data.put("zxcv",1234);
+
+        firestore.collection("test4").document("test4_2")
+                .set(test_data)
+                .addOnSuccessListener(documentReference -> util.quickLog("test4_2 successfully add data"))
+                .addOnFailureListener(e -> util.quickLog("test4_2 failed to add data"));
+         */
 
         //3rd test
+        /**
         Map<String,Object> test_data = new HashMap<>();
         test_data.put("string","qwer");
         test_data.put("bool",true);
         test_data.put("int",1000000);
         test_data.put("float",12.34);
         test_data.put("date",new Timestamp(new Date()));
-        test_data.put("timestamp", FieldValue.serverTimestamp());
+        test_data.put("server timestamp", FieldValue.serverTimestamp());
         test_data.put("list",Arrays.asList(1,2,3,4,5));
         test_data.put("null",null);
+
+        test_data.put("int2",7890);
 
         Map<String,Object> nest_data = new HashMap<>();
         nest_data.put("tyui","tyui");
@@ -302,52 +312,89 @@ public class Test4_Firestore extends Fragment {
         test_data.put("nest",nest_data);
 
         firestore.collection("test4").document("test4_3")
-                .set(test_data)
-                .addOnSuccessListener(documentReference -> util.quickLog("test4_3 successfully add data"))
-                .addOnFailureListener(e -> util.quickLog("test4_3 failed to add data"));
+                .set(test_data, SetOptions.merge())
+//                .set(test_data)
+                .addOnSuccessListener(documentReference -> util.quickLog("test4_3_1 successfully add data"))
+                .addOnFailureListener(e -> util.quickLog("test4_3_1 failed to add data"));
         firestore.collection("test4").document("test4_3").collection("test_coll_1").document("sub_data_1")
                 .set(nest_data)
-                .addOnSuccessListener(documentReference -> util.quickLog("test4_3 successfully add data"))
-                .addOnFailureListener(e -> util.quickLog("test4_3 failed to add data"));
+                .addOnSuccessListener(documentReference -> util.quickLog("test4_3_2 successfully add data"))
+                .addOnFailureListener(e -> util.quickLog("test4_3_2 failed to add data"));
         firestore.collection("test4").document("test4_3").collection("test_coll_2").document("sub_data_2")
                 .set(nest_data)
-                .addOnSuccessListener(documentReference -> util.quickLog("test4_3 successfully add data"))
-                .addOnFailureListener(e -> util.quickLog("test4_3 failed to add data"));
+                .addOnSuccessListener(documentReference -> util.quickLog("test4_3_3 successfully add data"))
+                .addOnFailureListener(e -> util.quickLog("test4_3_3 failed to add data"));
+         */
+
+        //4th test
+        Map<String,Object> test_data = new HashMap<>();
+        test_data.put("int",1000000);
+        test_data.put("list",Arrays.asList(1,2,3,4,5));
+        test_data.put("date",new Timestamp(new Date()));
+        test_data.put("server timestamp", FieldValue.serverTimestamp());
+
+        Map<String,Object> nest_data = new HashMap<>();
+        nest_data.put("tyui","tyui");
+        nest_data.put("ghjk",5678);
+
+        test_data.put("nest",nest_data);
+
+        DocumentReference documentReference1 = firestore.collection("test4").document("test4_4");
+        documentReference1
+                .set(test_data)
+                .addOnSuccessListener(documentReference -> util.quickLog("test4_4_1 successfully add data"))
+                .addOnFailureListener(e -> util.quickLog("test4_4_1 failed to add data"));
+        CollectionReference collectionReference1 = firestore.collection("test4").document("test4_4").collection("test_coll_1");
+        collectionReference1
+                .document("sub_data_1")
+                .set(nest_data)
+                .addOnSuccessListener(documentReference -> util.quickLog("test4_4_2 successfully add data"))
+                .addOnFailureListener(e -> util.quickLog("test4_4_2 failed to add data"));
+        DocumentReference documentReference2 = firestore.collection("test4").document("test4_4").collection("test_coll_2").document("sub_data_2");
+        documentReference2
+                .set(nest_data)
+                .addOnSuccessListener(documentReference -> util.quickLog("test4_4_3 successfully add data"))
+                .addOnFailureListener(e -> util.quickLog("test4_4_3 failed to add data"));
     }
 
     private void test4_button10_onclick(View view){
         //1st test
-//        firestore.collection("test4")
-//                .get()
-//                .addOnCompleteListener(task -> {
-//                    if (task.isSuccessful()) {
-//                        util.quickLog("test4 successfully get");
-//                        for (QueryDocumentSnapshot document:task.getResult()){
-////                            util.quickLog(document.getData().get("first"));
-//                            util.quickLog(document);
-//                        }
-//                    } else {
-//                        util.quickLog("test4 failed to get");
-//                        util.quickLog(task.getException());
-//                    }
-//                });
+        /**
+        firestore.collection("test4")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        util.quickLog("test4 successfully get");
+                        for (QueryDocumentSnapshot document:task.getResult()){
+//                            util.quickLog(document.getData().get("first"));
+                            util.quickLog(document);
+                        }
+                    } else {
+                        util.quickLog("test4 failed to get");
+                        util.quickLog(task.getException());
+                    }
+                });
+        */
 
         //2nd test
-//        firestore.collection("test4").document("test4_2")
-//                .get()
-//                .addOnCompleteListener(task -> {
-//                    if (task.isSuccessful()) {
-//                        util.quickLog("test4 successfully get");
-////                        util.quickLog(task.getResult().getData().get("zxcv"));
-////                        util.quickLog(task.getResult());
-//                        util.quickLog(task.getResult().getData());
-//                    } else {
-//                        util.quickLog("test4 failed to get");
-//                        util.quickLog(task.getException());
-//                    }
-//                });
+        /**
+        firestore.collection("test4").document("test4_2")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        util.quickLog("test4 successfully get");
+//                        util.quickLog(task.getResult().getData().get("zxcv"));
+//                        util.quickLog(task.getResult());
+                        util.quickLog(task.getResult().getData());
+                    } else {
+                        util.quickLog("test4 failed to get");
+                        util.quickLog(task.getException());
+                    }
+                });
+        */
 
         //3rd test
+        /**
         firestore.collection("test4").document("test4_3")
                 .get()
                 .addOnCompleteListener(task -> {
@@ -364,10 +411,35 @@ public class Test4_Firestore extends Fragment {
                         util.quickLog(task.getException());
                     }
                 });
+         */
+
+        //4th test
+        /**
+        firestore.collection("test4").document("test4_4")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        util.quickLog("test4 successfully get");
+//                        util.quickLog(task.getResult().getData().get("zxcv"));
+                        util.quickLog(task.getResult());
+//                        util.quickLog(task.getResult().getData());
+//                        for (DocumentSnapshot document:task.getResult()){
+//                            util.quickLog(document);
+//                        }
+                    } else {
+                        util.quickLog("test4 failed to get");
+                        util.quickLog(task.getException());
+                    }
+                });
+         */
     }
 
     private void test4_button11_onclick(View view){
-
+        //4th test  set>fieldvalue.increment
+        firestore.collection("test4").document("test4_4")
+                .update("int",20,"nest.tyui","qwer","list",FieldValue.arrayUnion(6),"list",FieldValue.arrayRemove(3),"nest.ghjk",FieldValue.increment(-1))
+//                .update("int",FieldValue.increment(-1),"nest.tyui","qwer","list",FieldValue.arrayUnion(6),"list",FieldValue.arrayRemove(3),"int",20)
+                .addOnSuccessListener(aVoid -> util.quickLog("test4_4 successfully update"));
     }
 
     private void test4_button12_onclick(View view){
