@@ -22,12 +22,16 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.firestore.WriteBatch;
 import com.max.memo3.Confidential.Conf_Info;
 import com.max.memo3.R;
 import com.max.memo3.Util.util;
@@ -113,6 +117,7 @@ public class Test4_Firestore extends Fragment {
         view.findViewById(R.id.test4_button10).setOnClickListener(this::test4_button10_onclick);
         view.findViewById(R.id.test4_button11).setOnClickListener(this::test4_button11_onclick);
         view.findViewById(R.id.test4_button12).setOnClickListener(this::test4_button12_onclick);
+        view.findViewById(R.id.test4_button13).setOnClickListener(this::test4_button13_onclick);
     }
 
     //google login
@@ -264,8 +269,9 @@ public class Test4_Firestore extends Fragment {
     }
 
     //firestore
+    //add
     private void test4_button9_onclick(View view){
-        //1st test
+        //1st test basic ADD
         /**
         Map<String,Object> test_data = new HashMap<>();
         test_data.put("first","Max");
@@ -278,7 +284,7 @@ public class Test4_Firestore extends Fragment {
                 .addOnFailureListener(e -> util.quickLog("test4_1 failed to add data"));
          */
 
-        //2nd test
+        //2nd test basic SET
         /**
         Map<String,Object> test_data = new HashMap<>();
         test_data.put("qwer","qwer");
@@ -291,7 +297,7 @@ public class Test4_Firestore extends Fragment {
                 .addOnFailureListener(e -> util.quickLog("test4_2 failed to add data"));
          */
 
-        //3rd test
+        //3rd test all different acceptable type
         /**
         Map<String,Object> test_data = new HashMap<>();
         test_data.put("string","qwer");
@@ -326,7 +332,8 @@ public class Test4_Firestore extends Fragment {
                 .addOnFailureListener(e -> util.quickLog("test4_3_3 failed to add data"));
          */
 
-        //4th test
+        //4th test main not add
+        /**
         Map<String,Object> test_data = new HashMap<>();
         test_data.put("int",1000000);
         test_data.put("list",Arrays.asList(1,2,3,4,5));
@@ -355,10 +362,108 @@ public class Test4_Firestore extends Fragment {
                 .set(nest_data)
                 .addOnSuccessListener(documentReference -> util.quickLog("test4_4_3 successfully add data"))
                 .addOnFailureListener(e -> util.quickLog("test4_4_3 failed to add data"));
+        */
+
+        //5th test document reference
+        /**
+        Map<String,Object> test_data = new HashMap<>();
+        test_data.put("int1",50);
+        test_data.put("int2",100);
+        test_data.put("date",new Timestamp(new Date()));
+        test_data.put("server timestamp", FieldValue.serverTimestamp());
+
+        DocumentReference documentReference1 = firestore.collection("test4").document("test4_5");
+        documentReference1
+                .set(test_data)
+                .addOnSuccessListener(documentReference -> util.quickLog("test4_5 successfully add data"))
+                .addOnFailureListener(e -> util.quickLog("test4_5 failed to add data"));
+        */
+
+        //6th test batch add
+        /**
+        Map<String,Object> test_data1 = new HashMap<>();
+        test_data1.put("int",50);
+        Map<String,Object> test_data2 = new HashMap<>();
+        test_data2.put("int",100);
+        Map<String,Object> test_data3 = new HashMap<>();
+        test_data3.put("int",150);
+
+        WriteBatch batch = firestore.batch();
+        CollectionReference collectionReference = firestore.collection("test4").document("test4_6").collection("test4_6");
+        batch.set(collectionReference.document("data_1"),test_data1);
+        batch.set(collectionReference.document("data_2"),test_data2);
+        batch.set(collectionReference.document("data_3"),test_data3);
+        batch.commit().addOnSuccessListener(documentReference -> util.quickLog("test4_6 successfully add data"));
+         */
+
+        //7th test snapshot listener (monitor change realtime)
+        /**
+        Map<String,Object> test_data = new HashMap<>();
+        test_data.put("int",50);
+
+        DocumentReference documentReference = firestore.collection("test4").document("test4_7");
+        documentReference.set(test_data).addOnSuccessListener(aVoid -> util.quickLog("test4_7 successfully add data"));
+        ListenerRegistration registration = documentReference.addSnapshotListener((documentSnapshot, e) -> {
+            util.quickLog("test4_7 data changed");
+            util.quickLog(documentSnapshot);
+        });
+        util.makeCountDownTimer(30 * 1000, 30 * 1001, new util.CountDownTimerImplementation() {
+            @Override
+            public void onTick(long ms_untilFinish) {
+//                util.quickLog(ms_untilFinish);
+            }
+
+            @Override
+            public void onFinish() {
+                registration.remove();
+                util.quickLog("test4_7 listener removed");
+            }
+        });
+         */
+
+        //8th test main not add
+        /**
+        Map<String,Object> test_data1 = new HashMap<>();
+        test_data1.put("int",50);
+        test_data1.put("int2",50);
+        Map<String,Object> test_data2 = new HashMap<>();
+        test_data2.put("int",100);
+        test_data2.put("int2",200);
+        Map<String,Object> test_data3 = new HashMap<>();
+        test_data3.put("int",150);
+        test_data3.put("int2",250);
+        Map<String,Object> test_data4 = new HashMap<>();
+        test_data4.put("int",150);
+        test_data4.put("int2",190);
+        Map<String,Object> test_data5 = new HashMap<>();
+        test_data5.put("int",150);
+        test_data5.put("int2",230);
+
+        WriteBatch batch = firestore.batch();
+        CollectionReference collectionReference = firestore.collection("test4").document("test4_8").collection("test4_8");
+        batch.set(collectionReference.document("data_1"),test_data1);
+        batch.set(collectionReference.document("data_2"),test_data2);
+        batch.set(collectionReference.document("data_3"),test_data3);
+        batch.set(collectionReference.document("data_4"),test_data4);
+        batch.set(collectionReference.document("data_5"),test_data5);
+        batch.commit().addOnSuccessListener(documentReference -> util.quickLog("test4_8 successfully add data"));
+         */
+
+        //9th test security rule
+        Map<String,Object> test_data = new HashMap<>();
+        test_data.put("first","Max");
+        test_data.put("second","test4");
+        test_data.put("third",1234);
+
+        firestore.collection("test4_9").document("test4_9").collection("test4_9")
+                .add(test_data)
+                .addOnSuccessListener(documentReference -> util.quickLog("test4_9 successfully add data"))
+                .addOnFailureListener(e -> util.quickLog("test4_9 failed to add data"));
     }
 
+    //read
     private void test4_button10_onclick(View view){
-        //1st test
+        //1st test basic get
         /**
         firestore.collection("test4")
                 .get()
@@ -376,7 +481,7 @@ public class Test4_Firestore extends Fragment {
                 });
         */
 
-        //2nd test
+        //2nd test basic get
         /**
         firestore.collection("test4").document("test4_2")
                 .get()
@@ -393,7 +498,7 @@ public class Test4_Firestore extends Fragment {
                 });
         */
 
-        //3rd test
+        //3rd test main not get
         /**
         firestore.collection("test4").document("test4_3")
                 .get()
@@ -413,7 +518,7 @@ public class Test4_Firestore extends Fragment {
                 });
          */
 
-        //4th test
+        //4th test get one field
         /**
         firestore.collection("test4").document("test4_4")
                 .get()
@@ -432,17 +537,89 @@ public class Test4_Firestore extends Fragment {
                     }
                 });
          */
+
+        //6th test filter get
+        /**
+        firestore.collection("test4").document("test4_6").collection("test4_6")
+                .whereGreaterThanOrEqualTo("int",100)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()){
+                        for (QueryDocumentSnapshot documentSnapshot:task.getResult()){
+                            util.quickLog(documentSnapshot);
+                        }
+                    }
+                });
+         */
+
+        //8th test deeper filter get, ignore cursor && search in array
+        //https://firebase.google.com/docs/firestore/query-data/queries?authuser=0
+        /**
+        CollectionReference collectionReference = firestore.collection("test4").document("test4_8").collection("test4_8");
+//        util.quickLog("qwer");
+        Query query = collectionReference
+                .whereGreaterThanOrEqualTo("int",100).orderBy("int")  //"where" and next "order by" need to do on same field
+//                .whereGreaterThan("int2",200).orderBy("int2", Query.Direction.DESCENDING);
+                .limit(10);
+//        util.quickLog("asdf");
+        query.get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot snapshot : task.getResult()){
+                            util.quickLog(snapshot);
+                        }
+                    }
+                });
+         */
     }
 
+    //update
     private void test4_button11_onclick(View view){
-        //4th test  set>fieldvalue.increment
+        //4th test basic update, set>fieldvalue.increment
+        /**
         firestore.collection("test4").document("test4_4")
                 .update("int",20,"nest.tyui","qwer","list",FieldValue.arrayUnion(6),"list",FieldValue.arrayRemove(3),"nest.ghjk",FieldValue.increment(-1))
 //                .update("int",FieldValue.increment(-1),"nest.tyui","qwer","list",FieldValue.arrayUnion(6),"list",FieldValue.arrayRemove(3),"int",20)
                 .addOnSuccessListener(aVoid -> util.quickLog("test4_4 successfully update"));
+         */
     }
 
+    //delete
     private void test4_button12_onclick(View view){
+        //5th test (1) basic delete
+        /**
+        firestore.collection("test4").document("test4_5")
+                .delete()
+                .addOnSuccessListener(documentReference -> util.quickLog("test4_5 successfully delete"))
+                .addOnFailureListener(e -> util.quickLog("test4_5 failed to delete"));
+         */
 
+        //5th test (2) delete one field only, delete non-existing field will still be success, only no effect
+        /**
+        Map<String,Object> updates = new HashMap<>();
+        updates.put("int2",FieldValue.delete());
+        firestore.collection("test4").document("test4_5")
+                .update(updates)
+                .addOnSuccessListener(documentReference -> util.quickLog("test4_5 successfully delete"))
+                .addOnFailureListener(e -> util.quickLog("test4_5 failed to delete"));
+         */
+    }
+
+    //toggle online mode
+    private boolean isOn = true;
+    private void test4_button13_onclick(View view){
+        if (isOn){
+            firestore.disableNetwork()
+                    .addOnCompleteListener(task -> {
+                        util.quickLog("firestore disabled network");
+                        isOn = false;
+                    });
+        } else {
+            firestore.enableNetwork()
+                    .addOnCompleteListener(task -> {
+                        util.quickLog("firestore enabled network");
+                        isOn = true;
+                    });
+        }
     }
 }
