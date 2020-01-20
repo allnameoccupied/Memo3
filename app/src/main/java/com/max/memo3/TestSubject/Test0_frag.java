@@ -50,6 +50,13 @@ public class Test0_frag extends Fragment {
         view.findViewById(R.id.test0to3).setOnClickListener(Test0_frag.this::onButtonClick);
         view.findViewById(R.id.test0to4).setOnClickListener(Test0_frag.this::onButtonClick);
         view.findViewById(R.id.test0to5).setOnClickListener(Test0_frag.this::onButtonClick);
+        view.findViewById(R.id.test0to6).setOnClickListener(Test0_frag.this::onButtonClick);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        viewModel.resetMsgToShow();
     }
 
     private void onButtonClick(View view){
@@ -68,6 +75,9 @@ public class Test0_frag extends Fragment {
                 break;
             case R.id.test0to5:
                 navController.navigate(R.id.test5_Exception_nav);
+                break;
+            case R.id.test0to6:
+                navController.navigate(R.id.test6_Realm_nav);
                 break;
         }
     }

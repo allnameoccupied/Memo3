@@ -24,6 +24,9 @@
         <action
             android:id="@+id/action_test0_Main_nav_to_test5_Exception"
             app:destination="@id/test5_Exception_nav" />
+        <action
+            android:id="@+id/action_test0_Main_nav_to_placeholder"
+            app:destination="@id/test6_Realm_nav" />
     </fragment>
     <fragment
         android:id="@+id/test1_Button_nav"
@@ -50,4 +53,8 @@
         android:name="com.max.memo3.TestSubject.Test5_Exception"
         android:label="Test5_Exception"
         tools:layout="@layout/test5_frag"/>
+    <fragment
+        android:id="@+id/test6_Realm_nav"
+        android:name="com.max.memo3.TestSubject.Test6_Realm"
+        tools:layout="@layout/test2_frag" />
 </navigation>

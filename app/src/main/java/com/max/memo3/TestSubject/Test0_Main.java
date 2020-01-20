@@ -2,6 +2,7 @@ package com.max.memo3.TestSubject;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.NavController;
@@ -11,9 +12,11 @@ import androidx.navigation.fragment.NavHostFragment;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import com.max.memo3.R;
 import com.max.memo3.Util.util;
+import com.max.memo3.databinding.ActivityTest0MainBinding;
 
 import java.util.function.Consumer;
 
@@ -30,6 +33,10 @@ public class Test0_Main extends AppCompatActivity {
 
         //util init
         util.CURR_CONTEXT = this;
+
+        //test5 + set top textview
+        Observer<String> topTextObserver = s -> ((TextView)findViewById(R.id.Test0_main_fragment_text)).setText(s);
+        viewModel.getMsgToShow().observe(this,topTextObserver);
     }
 
     @Override
