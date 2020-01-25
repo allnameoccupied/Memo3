@@ -19,7 +19,7 @@ public class Job_Service extends JobService {
         String action = bundle.getString(Custom_Scheduler_Record_JobService.ACTION_TODO_JOBSERVICE);
         switch (action){
             case "test" :
-                util.quickLog("job service started");
+                util.log("job service started");
                 break;
 //            case "from_device_test" :
 //                frequently_used_stuff.quick_log("Job service started for "+Integer.toString(time_runned)+" times");

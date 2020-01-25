@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import com.max.memo3.R;
 import com.max.memo3.Util.util;
@@ -12,8 +11,6 @@ import com.max.memo3.Util.util;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModel;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
@@ -43,6 +40,8 @@ public class Test0_frag extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         navController = NavHostFragment.findNavController(this);
+
+        view.findViewById(R.id.test0_logTestContent).setOnClickListener(this::test0_logAllTestContent);
 
         //button to test
         view.findViewById(R.id.test0to1).setOnClickListener(Test0_frag.this::onButtonClick);
@@ -80,6 +79,16 @@ public class Test0_frag extends Fragment {
                 navController.navigate(R.id.test6_Realm_nav);
                 break;
         }
+    }
+
+    private void test0_logAllTestContent(View view){
+        util.log("Test 0 : "+"main");
+        util.log("Test 1 : "+"button onclick");
+        util.log("Test 2 : "+"timer, vibrator, count down timer");
+        util.log("Test 3 : "+"flash light, toggle button, style.xml");
+        util.log("Test 4 : "+"firestore");
+        util.log("Test 5 : "+"exception, view model, data binding");
+        util.log("Test 6 : "+"realm, util stuff");
     }
 
     @Override

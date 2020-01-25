@@ -17,29 +17,15 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentChange;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.ListenerRegistration;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.SetOptions;
-import com.google.firebase.firestore.WriteBatch;
 import com.max.memo3.Confidential.Conf_Info;
 import com.max.memo3.R;
 import com.max.memo3.Util.util;
 
-import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import androidx.annotation.NonNull;
@@ -122,10 +108,10 @@ public class Test4_Firestore extends Fragment {
 
     //google login
     private void test4_button1_onclick(View view){
-//        util.quickLog(getActivity().toString());
-//        util.quickLog(getContext().toString());
+//        util.log(getActivity().toString());
+//        util.log(getContext().toString());
         account = GoogleSignIn.getLastSignedInAccount(getActivity());
-        util.quickLog("google not sign in ed account "+(account==null));
+        util.log("google not sign in ed account "+(account==null));
     }
 
     private void test4_googlelogin_onclick(View view){
@@ -140,10 +126,10 @@ public class Test4_Firestore extends Fragment {
         if (requestCode == 6128){
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
-                util.quickLog(task.isSuccessful());
+                util.log(task.isSuccessful());
                 account = task.getResult(ApiException.class);
             } catch (ApiException e){
-                util.quickLog(e.getMessage());
+                util.log(e.getMessage());
             }
             ((TextView)getActivity().findViewById(R.id.test4_textView1)).setText(account==null?"Null":account.getDisplayName());
         }
@@ -155,9 +141,9 @@ public class Test4_Firestore extends Fragment {
                 account = GoogleSignIn.getLastSignedInAccount(getActivity());
                 ((TextView)getActivity().findViewById(R.id.test4_textView1)).setText(account.getDisplayName());
             } else if (response==null){
-                util.quickLog("you cancelled it right?");
+                util.log("you cancelled it right?");
             } else {
-                util.quickLog(response.getError().getErrorCode());
+                util.log(response.getError().getErrorCode());
             }
         }
     }
@@ -165,36 +151,36 @@ public class Test4_Firestore extends Fragment {
     private void test4_button2_onclick(View view){
         account = GoogleSignIn.getLastSignedInAccount(getActivity());
         if (account==null){
-            util.quickLog("no google ac logined");
+            util.log("no google ac logined");
         } else {
-            util.quickLog(".");
-            util.quickLog(account.getDisplayName());
-//            util.quickLog(account.getFamilyName());
-//            util.quickLog(account.getGivenName());
-            util.quickLog(account.getEmail());
-            util.quickLog(account.getId());
-            util.quickLog(account.getIdToken());
-            util.quickLog(account.getServerAuthCode());
-            util.quickLog(account.getAccount()==null);
-//            util.quickLog(account.getAccount().name);
-//            util.quickLog(account.getAccount().type);
-            util.quickLog(account.getPhotoUrl().toString());
-            util.quickLog(account.getRequestedScopes().size());
-//            account.getRequestedScopes().forEach(scope -> util.quickLog(scope.toString()));
-            util.quickLog(account.getGrantedScopes().size());
-            account.getGrantedScopes().forEach(scope -> util.quickLog(scope.toString()));
+            util.log(".");
+            util.log(account.getDisplayName());
+//            util.log(account.getFamilyName());
+//            util.log(account.getGivenName());
+            util.log(account.getEmail());
+            util.log(account.getId());
+            util.log(account.getIdToken());
+            util.log(account.getServerAuthCode());
+            util.log(account.getAccount()==null);
+//            util.log(account.getAccount().name);
+//            util.log(account.getAccount().type);
+            util.log(account.getPhotoUrl().toString());
+            util.log(account.getRequestedScopes().size());
+//            account.getRequestedScopes().forEach(scope -> util.log(scope.toString()));
+            util.log(account.getGrantedScopes().size());
+            account.getGrantedScopes().forEach(scope -> util.log(scope.toString()));
         }
     }
 
     private void test4_button3_onclick(View view){
-//        util.quickLog("asdf");
-        googleSignInClient.signOut().addOnCompleteListener(getActivity(),task -> util.quickLog("sign out ed"));
+//        util.log("asdf");
+        googleSignInClient.signOut().addOnCompleteListener(getActivity(),task -> util.log("sign out ed"));
         ((TextView)getActivity().findViewById(R.id.test4_textView1)).setText("Null");
     }
 
     private void test4_button4_onclick(View view){
-//        util.quickLog("asdf");
-        googleSignInClient.revokeAccess().addOnCompleteListener(getActivity(),task -> util.quickLog("disconnect ed"));
+//        util.log("asdf");
+        googleSignInClient.revokeAccess().addOnCompleteListener(getActivity(),task -> util.log("disconnect ed"));
         ((TextView)getActivity().findViewById(R.id.test4_textView1)).setText("Null");
     }
 
@@ -212,18 +198,18 @@ public class Test4_Firestore extends Fragment {
         //using custom google login setup  (google sign in need IDtoken)
         account = GoogleSignIn.getLastSignedInAccount(getActivity());
         if (account==null){
-            util.quickLog("no google ac sign in ed, no login");
+            util.log("no google ac sign in ed, no login");
             return;
         }
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         firebaseAuth.signInWithCredential(GoogleAuthProvider.getCredential(account.getIdToken(),null))
                 .addOnCompleteListener(getActivity(),task -> {
                     if (task.isSuccessful()){
-                        util.quickLog("firebase login ed");
+                        util.log("firebase login ed");
                         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
                         ((TextView)getActivity().findViewById(R.id.test4_textView2)).setText(firebaseUser.getDisplayName());
                     } else {
-                        util.quickLog("asdf");
+                        util.log("asdf");
                     }
                 });
     }
@@ -231,28 +217,28 @@ public class Test4_Firestore extends Fragment {
     private void test4_button6_onclick(View view){
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         if (firebaseUser==null){
-            util.quickLog("no firebase user login ed");
+            util.log("no firebase user login ed");
         } else {
             test4_button2_onclick(view);
-            util.quickLog(".");
-            util.quickLog(firebaseUser.getDisplayName());
-            util.quickLog(firebaseUser.getEmail());
-            util.quickLog(firebaseUser.getPhoneNumber());
-            util.quickLog(firebaseUser.getProviderId());
-            util.quickLog(firebaseUser.getUid());
-            util.quickLog(firebaseUser.getIdToken(false).getResult().getToken());
-            util.quickLog(firebaseUser.getPhotoUrl().toString());
-            firebaseUser.getProviderData().forEach(o -> util.quickLog(o.toString()));
-            util.quickLog(firebaseUser.getMetadata().getCreationTimestamp());
-            util.quickLog(firebaseUser.getMetadata().getLastSignInTimestamp());
+            util.log(".");
+            util.log(firebaseUser.getDisplayName());
+            util.log(firebaseUser.getEmail());
+            util.log(firebaseUser.getPhoneNumber());
+            util.log(firebaseUser.getProviderId());
+            util.log(firebaseUser.getUid());
+            util.log(firebaseUser.getIdToken(false).getResult().getToken());
+            util.log(firebaseUser.getPhotoUrl().toString());
+            firebaseUser.getProviderData().forEach(o -> util.log(o.toString()));
+            util.log(firebaseUser.getMetadata().getCreationTimestamp());
+            util.log(firebaseUser.getMetadata().getLastSignInTimestamp());
         }
     }
 
     private void test4_button7_onclick(View view){
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        util.quickLog(firebaseUser==null);
+        util.log(firebaseUser==null);
         AuthUI.getInstance().signOut(getActivity()).addOnCompleteListener(task -> {
-            util.quickLog("firebase sign out ed");
+            util.log("firebase sign out ed");
             ((TextView)getActivity().findViewById(R.id.test4_textView2)).setText("Null");
             ((TextView)getActivity().findViewById(R.id.test4_textView1)).setText("Null");
         });
@@ -260,9 +246,9 @@ public class Test4_Firestore extends Fragment {
 
     private void test4_button8_onclick(View view){
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        util.quickLog(firebaseUser==null);
+        util.log(firebaseUser==null);
         AuthUI.getInstance().delete(getActivity()).addOnCompleteListener(task -> {
-            util.quickLog("firebase disconnect ed");
+            util.log("firebase disconnect ed");
             ((TextView)getActivity().findViewById(R.id.test4_textView2)).setText("Null");
             ((TextView)getActivity().findViewById(R.id.test4_textView1)).setText("Null");
         });
@@ -280,8 +266,8 @@ public class Test4_Firestore extends Fragment {
 
         firestore.collection("test4")
                 .add(test_data)
-                .addOnSuccessListener(documentReference -> util.quickLog("test4_1 successfully add data"))
-                .addOnFailureListener(e -> util.quickLog("test4_1 failed to add data"));
+                .addOnSuccessListener(documentReference -> util.log("test4_1 successfully add data"))
+                .addOnFailureListener(e -> util.log("test4_1 failed to add data"));
          */
 
         //2nd test basic SET
@@ -293,8 +279,8 @@ public class Test4_Firestore extends Fragment {
 
         firestore.collection("test4").document("test4_2")
                 .set(test_data)
-                .addOnSuccessListener(documentReference -> util.quickLog("test4_2 successfully add data"))
-                .addOnFailureListener(e -> util.quickLog("test4_2 failed to add data"));
+                .addOnSuccessListener(documentReference -> util.log("test4_2 successfully add data"))
+                .addOnFailureListener(e -> util.log("test4_2 failed to add data"));
          */
 
         //3rd test all different acceptable type
@@ -320,16 +306,16 @@ public class Test4_Firestore extends Fragment {
         firestore.collection("test4").document("test4_3")
                 .set(test_data, SetOptions.merge())
 //                .set(test_data)
-                .addOnSuccessListener(documentReference -> util.quickLog("test4_3_1 successfully add data"))
-                .addOnFailureListener(e -> util.quickLog("test4_3_1 failed to add data"));
+                .addOnSuccessListener(documentReference -> util.log("test4_3_1 successfully add data"))
+                .addOnFailureListener(e -> util.log("test4_3_1 failed to add data"));
         firestore.collection("test4").document("test4_3").collection("test_coll_1").document("sub_data_1")
                 .set(nest_data)
-                .addOnSuccessListener(documentReference -> util.quickLog("test4_3_2 successfully add data"))
-                .addOnFailureListener(e -> util.quickLog("test4_3_2 failed to add data"));
+                .addOnSuccessListener(documentReference -> util.log("test4_3_2 successfully add data"))
+                .addOnFailureListener(e -> util.log("test4_3_2 failed to add data"));
         firestore.collection("test4").document("test4_3").collection("test_coll_2").document("sub_data_2")
                 .set(nest_data)
-                .addOnSuccessListener(documentReference -> util.quickLog("test4_3_3 successfully add data"))
-                .addOnFailureListener(e -> util.quickLog("test4_3_3 failed to add data"));
+                .addOnSuccessListener(documentReference -> util.log("test4_3_3 successfully add data"))
+                .addOnFailureListener(e -> util.log("test4_3_3 failed to add data"));
          */
 
         //4th test main not add
@@ -349,19 +335,19 @@ public class Test4_Firestore extends Fragment {
         DocumentReference documentReference1 = firestore.collection("test4").document("test4_4");
         documentReference1
                 .set(test_data)
-                .addOnSuccessListener(documentReference -> util.quickLog("test4_4_1 successfully add data"))
-                .addOnFailureListener(e -> util.quickLog("test4_4_1 failed to add data"));
+                .addOnSuccessListener(documentReference -> util.log("test4_4_1 successfully add data"))
+                .addOnFailureListener(e -> util.log("test4_4_1 failed to add data"));
         CollectionReference collectionReference1 = firestore.collection("test4").document("test4_4").collection("test_coll_1");
         collectionReference1
                 .document("sub_data_1")
                 .set(nest_data)
-                .addOnSuccessListener(documentReference -> util.quickLog("test4_4_2 successfully add data"))
-                .addOnFailureListener(e -> util.quickLog("test4_4_2 failed to add data"));
+                .addOnSuccessListener(documentReference -> util.log("test4_4_2 successfully add data"))
+                .addOnFailureListener(e -> util.log("test4_4_2 failed to add data"));
         DocumentReference documentReference2 = firestore.collection("test4").document("test4_4").collection("test_coll_2").document("sub_data_2");
         documentReference2
                 .set(nest_data)
-                .addOnSuccessListener(documentReference -> util.quickLog("test4_4_3 successfully add data"))
-                .addOnFailureListener(e -> util.quickLog("test4_4_3 failed to add data"));
+                .addOnSuccessListener(documentReference -> util.log("test4_4_3 successfully add data"))
+                .addOnFailureListener(e -> util.log("test4_4_3 failed to add data"));
         */
 
         //5th test document reference
@@ -375,8 +361,8 @@ public class Test4_Firestore extends Fragment {
         DocumentReference documentReference1 = firestore.collection("test4").document("test4_5");
         documentReference1
                 .set(test_data)
-                .addOnSuccessListener(documentReference -> util.quickLog("test4_5 successfully add data"))
-                .addOnFailureListener(e -> util.quickLog("test4_5 failed to add data"));
+                .addOnSuccessListener(documentReference -> util.log("test4_5 successfully add data"))
+                .addOnFailureListener(e -> util.log("test4_5 failed to add data"));
         */
 
         //6th test batch add
@@ -393,7 +379,7 @@ public class Test4_Firestore extends Fragment {
         batch.set(collectionReference.document("data_1"),test_data1);
         batch.set(collectionReference.document("data_2"),test_data2);
         batch.set(collectionReference.document("data_3"),test_data3);
-        batch.commit().addOnSuccessListener(documentReference -> util.quickLog("test4_6 successfully add data"));
+        batch.commit().addOnSuccessListener(documentReference -> util.log("test4_6 successfully add data"));
          */
 
         //7th test snapshot listener (monitor change realtime)
@@ -402,21 +388,21 @@ public class Test4_Firestore extends Fragment {
         test_data.put("int",50);
 
         DocumentReference documentReference = firestore.collection("test4").document("test4_7");
-        documentReference.set(test_data).addOnSuccessListener(aVoid -> util.quickLog("test4_7 successfully add data"));
+        documentReference.set(test_data).addOnSuccessListener(aVoid -> util.log("test4_7 successfully add data"));
         ListenerRegistration registration = documentReference.addSnapshotListener((documentSnapshot, e) -> {
-            util.quickLog("test4_7 data changed");
-            util.quickLog(documentSnapshot);
+            util.log("test4_7 data changed");
+            util.log(documentSnapshot);
         });
         util.makeCountDownTimer(30 * 1000, 30 * 1001, new util.CountDownTimerImplementation() {
             @Override
             public void onTick(long ms_untilFinish) {
-//                util.quickLog(ms_untilFinish);
+//                util.log(ms_untilFinish);
             }
 
             @Override
             public void onFinish() {
                 registration.remove();
-                util.quickLog("test4_7 listener removed");
+                util.log("test4_7 listener removed");
             }
         });
          */
@@ -446,7 +432,7 @@ public class Test4_Firestore extends Fragment {
         batch.set(collectionReference.document("data_3"),test_data3);
         batch.set(collectionReference.document("data_4"),test_data4);
         batch.set(collectionReference.document("data_5"),test_data5);
-        batch.commit().addOnSuccessListener(documentReference -> util.quickLog("test4_8 successfully add data"));
+        batch.commit().addOnSuccessListener(documentReference -> util.log("test4_8 successfully add data"));
          */
 
         //9th test security rule
@@ -457,8 +443,8 @@ public class Test4_Firestore extends Fragment {
 
         firestore.collection("test4_9").document("test4_9").collection("test4_9")
                 .add(test_data)
-                .addOnSuccessListener(documentReference -> util.quickLog("test4_9 successfully add data"))
-                .addOnFailureListener(e -> util.quickLog("test4_9 failed to add data"));
+                .addOnSuccessListener(documentReference -> util.log("test4_9 successfully add data"))
+                .addOnFailureListener(e -> util.log("test4_9 failed to add data"));
     }
 
     //read
@@ -469,14 +455,14 @@ public class Test4_Firestore extends Fragment {
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        util.quickLog("test4 successfully get");
+                        util.log("test4 successfully get");
                         for (QueryDocumentSnapshot document:task.getResult()){
-//                            util.quickLog(document.getData().get("first"));
-                            util.quickLog(document);
+//                            util.log(document.getData().get("first"));
+                            util.log(document);
                         }
                     } else {
-                        util.quickLog("test4 failed to get");
-                        util.quickLog(task.getException());
+                        util.log("test4 failed to get");
+                        util.log(task.getException());
                     }
                 });
         */
@@ -487,13 +473,13 @@ public class Test4_Firestore extends Fragment {
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        util.quickLog("test4 successfully get");
-//                        util.quickLog(task.getResult().getData().get("zxcv"));
-//                        util.quickLog(task.getResult());
-                        util.quickLog(task.getResult().getData());
+                        util.log("test4 successfully get");
+//                        util.log(task.getResult().getData().get("zxcv"));
+//                        util.log(task.getResult());
+                        util.log(task.getResult().getData());
                     } else {
-                        util.quickLog("test4 failed to get");
-                        util.quickLog(task.getException());
+                        util.log("test4 failed to get");
+                        util.log(task.getException());
                     }
                 });
         */
@@ -504,16 +490,16 @@ public class Test4_Firestore extends Fragment {
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        util.quickLog("test4 successfully get");
-//                        util.quickLog(task.getResult().getData().get("zxcv"));
-                        util.quickLog(task.getResult());
-//                        util.quickLog(task.getResult().getData());
+                        util.log("test4 successfully get");
+//                        util.log(task.getResult().getData().get("zxcv"));
+                        util.log(task.getResult());
+//                        util.log(task.getResult().getData());
 //                        for (DocumentSnapshot document:task.getResult()){
-//                            util.quickLog(document);
+//                            util.log(document);
 //                        }
                     } else {
-                        util.quickLog("test4 failed to get");
-                        util.quickLog(task.getException());
+                        util.log("test4 failed to get");
+                        util.log(task.getException());
                     }
                 });
          */
@@ -524,16 +510,16 @@ public class Test4_Firestore extends Fragment {
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        util.quickLog("test4 successfully get");
-//                        util.quickLog(task.getResult().getData().get("zxcv"));
-                        util.quickLog(task.getResult());
-//                        util.quickLog(task.getResult().getData());
+                        util.log("test4 successfully get");
+//                        util.log(task.getResult().getData().get("zxcv"));
+                        util.log(task.getResult());
+//                        util.log(task.getResult().getData());
 //                        for (DocumentSnapshot document:task.getResult()){
-//                            util.quickLog(document);
+//                            util.log(document);
 //                        }
                     } else {
-                        util.quickLog("test4 failed to get");
-                        util.quickLog(task.getException());
+                        util.log("test4 failed to get");
+                        util.log(task.getException());
                     }
                 });
          */
@@ -546,7 +532,7 @@ public class Test4_Firestore extends Fragment {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()){
                         for (QueryDocumentSnapshot documentSnapshot:task.getResult()){
-                            util.quickLog(documentSnapshot);
+                            util.log(documentSnapshot);
                         }
                     }
                 });
@@ -556,17 +542,17 @@ public class Test4_Firestore extends Fragment {
         //https://firebase.google.com/docs/firestore/query-data/queries?authuser=0
         /**
         CollectionReference collectionReference = firestore.collection("test4").document("test4_8").collection("test4_8");
-//        util.quickLog("qwer");
+//        util.log("qwer");
         Query query = collectionReference
                 .whereGreaterThanOrEqualTo("int",100).orderBy("int")  //"where" and next "order by" need to do on same field
 //                .whereGreaterThan("int2",200).orderBy("int2", Query.Direction.DESCENDING);
                 .limit(10);
-//        util.quickLog("asdf");
+//        util.log("asdf");
         query.get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         for (QueryDocumentSnapshot snapshot : task.getResult()){
-                            util.quickLog(snapshot);
+                            util.log(snapshot);
                         }
                     }
                 });
@@ -580,7 +566,7 @@ public class Test4_Firestore extends Fragment {
         firestore.collection("test4").document("test4_4")
                 .update("int",20,"nest.tyui","qwer","list",FieldValue.arrayUnion(6),"list",FieldValue.arrayRemove(3),"nest.ghjk",FieldValue.increment(-1))
 //                .update("int",FieldValue.increment(-1),"nest.tyui","qwer","list",FieldValue.arrayUnion(6),"list",FieldValue.arrayRemove(3),"int",20)
-                .addOnSuccessListener(aVoid -> util.quickLog("test4_4 successfully update"));
+                .addOnSuccessListener(aVoid -> util.log("test4_4 successfully update"));
          */
     }
 
@@ -590,8 +576,8 @@ public class Test4_Firestore extends Fragment {
         /**
         firestore.collection("test4").document("test4_5")
                 .delete()
-                .addOnSuccessListener(documentReference -> util.quickLog("test4_5 successfully delete"))
-                .addOnFailureListener(e -> util.quickLog("test4_5 failed to delete"));
+                .addOnSuccessListener(documentReference -> util.log("test4_5 successfully delete"))
+                .addOnFailureListener(e -> util.log("test4_5 failed to delete"));
          */
 
         //5th test (2) delete one field only, delete non-existing field will still be success, only no effect
@@ -600,8 +586,8 @@ public class Test4_Firestore extends Fragment {
         updates.put("int2",FieldValue.delete());
         firestore.collection("test4").document("test4_5")
                 .update(updates)
-                .addOnSuccessListener(documentReference -> util.quickLog("test4_5 successfully delete"))
-                .addOnFailureListener(e -> util.quickLog("test4_5 failed to delete"));
+                .addOnSuccessListener(documentReference -> util.log("test4_5 successfully delete"))
+                .addOnFailureListener(e -> util.log("test4_5 failed to delete"));
          */
     }
 
@@ -611,13 +597,13 @@ public class Test4_Firestore extends Fragment {
         if (isOn){
             firestore.disableNetwork()
                     .addOnCompleteListener(task -> {
-                        util.quickLog("firestore disabled network");
+                        util.log("firestore disabled network");
                         isOn = false;
                     });
         } else {
             firestore.enableNetwork()
                     .addOnCompleteListener(task -> {
-                        util.quickLog("firestore enabled network");
+                        util.log("firestore enabled network");
                         isOn = true;
                     });
         }

@@ -47,7 +47,7 @@ public class SP_service extends Service implements SensorEventListener {
             if (isInitialStickyBroadcast()){return;}
             switch (intent.getAction()){
                 case ConnectivityManager.CONNECTIVITY_ACTION :
-                    util.quickLog("successfully response in service");
+                    util.log("successfully response in service");
                     util.makeToastLog(context, "broadcast received");
                     break;
                 case Intent.ACTION_POWER_CONNECTED :
@@ -78,7 +78,7 @@ public class SP_service extends Service implements SensorEventListener {
                     util.makeToastLog(context,"Bluetooth device connected");
                     bluetoothDevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                     util.makeToastLog(context,"Name = "+bluetoothDevice.getName());
-                    util.quickLog("Address = "+bluetoothDevice.getAddress());
+                    util.log("Address = "+bluetoothDevice.getAddress());
                     break;
                 case BluetoothDevice.ACTION_ACL_DISCONNECTED :
                     util.makeToastLog(context,"Bluetooth device DISconnected");
@@ -249,7 +249,7 @@ public class SP_service extends Service implements SensorEventListener {
                     }
                     break;
                 case util.TEST :
-                    util.quickLog("local broadcast received");
+                    util.log("local broadcast received");
 //                    LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(util.APP_CONTEXT);
 //                    localBroadcastManager.sendBroadcast(new Intent("sdf"));
                     break;
@@ -361,7 +361,7 @@ public class SP_service extends Service implements SensorEventListener {
         startForeground(1,notification);    //start, (id == 0, then cant show, ???)
 
         util.makeToast(this,"service started");
-        util.quickLog("service started");
+        util.log("service started");
         return SP_service.START_STICKY;
     }
 
@@ -401,7 +401,7 @@ public class SP_service extends Service implements SensorEventListener {
                 sensor.type = event.sensor.getType();
                 sensor.value = event.values[0];
                 sensor_value.put(event.sensor.getType(), sensor);
-//                util.quickLog(sensor.name+" "+sensor.type+" "+sensor.value);
+//                util.log(sensor.name+" "+sensor.type+" "+sensor.value);
             } else {
                 sensor.value = event.values[0];
             }
@@ -419,12 +419,12 @@ public class SP_service extends Service implements SensorEventListener {
 //                sensor.type = event.sensor.getType();
 //                sensor.value = event.values[0];
 //                sensor_value.put(event.sensor.getType(), sensor);
-////                util.quickLog(sensor.name+" "+sensor.type+" "+sensor.value);
+////                util.log(sensor.name+" "+sensor.type+" "+sensor.value);
 //            } else {
 //                sensor.value = event.values[0];
 //            }
 //        }
-        util.quickLog(event.sensor.getName() + " sensor data changed to " + event.values[0]);
+        util.log(event.sensor.getName() + " sensor data changed to " + event.values[0]);
     }
 
     @Override

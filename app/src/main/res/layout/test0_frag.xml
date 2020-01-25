@@ -38,13 +38,13 @@
         app:layout_constraintTop_toBottomOf="@+id/test0to1" />
 
     <Button
-        android:id="@+id/test_util_toast"
+        android:id="@+id/test0_logTestContent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="32dp"
-        android:text="util toast"
-        android:visibility="invisible"
+        android:text="thing in\neach test"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/test0_frag_text0" />
 
@@ -87,4 +87,5 @@
         android:text="to test6"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/test0to5" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

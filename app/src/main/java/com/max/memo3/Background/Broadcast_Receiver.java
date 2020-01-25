@@ -45,11 +45,11 @@ public class Broadcast_Receiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         if (!allActionListening.contains(intent.getAction())){return;}
         util.CURR_CONTEXT = context;
-        util.quickLog(qwer++);
-        util.quickLog("Received = "+intent.getAction());
+        util.log(qwer++);
+        util.log("Received = "+intent.getAction());
         switch (intent.getAction()) {
             case "qwer" :
-                util.makeToast_wait("qwer");
+                util.makeToast("qwer");
                 break;
 
             case AudioManager.ACTION_AUDIO_BECOMING_NOISY :
@@ -58,7 +58,7 @@ public class Broadcast_Receiver extends BroadcastReceiver {
                 break;
 
             case ConnectivityManager.CONNECTIVITY_ACTION:
-                util.quickLog("network changed");
+                util.log("network changed");
                 break;
         }
     }

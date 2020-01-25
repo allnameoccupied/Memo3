@@ -7,8 +7,6 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 import com.max.memo3.Exception.Test5_Exception1;
-import com.max.memo3.Exception.Test5_Exception2;
-import com.max.memo3.Exception.Test5_Exception3;
 import com.max.memo3.R;
 import com.max.memo3.Util.util;
 
@@ -51,26 +49,26 @@ public class Test5_Exception extends Fragment {
 
     //"return" in "catch" will still run "finally"
     private void test5_button1_onclick(View view){
-//        util.quickLog("asf");
+//        util.log("asf");
         try {
-            util.quickLog("qwer");
+            util.log("qwer");
 //            int y = 6/0;
-//            util.quickLog("asdf");
+//            util.log("asdf");
             throw new Test5_Exception1();
 //            throw new Exception("asdf");
         } catch (RuntimeException e){
-            util.quickLog(e.getClass()+" "+e.getMessage());
-            util.quickLog("runtime");
+            util.log(e.getClass()+" "+e.getMessage());
+            util.log("runtime");
 //            e.printStackTrace();
         } catch (Throwable e){
-            util.quickLog(e.getClass()+" "+e.getMessage());
-            util.quickLog("throwable");
+            util.log(e.getClass()+" "+e.getMessage());
+            util.log("throwable");
             return;
 //            e.printStackTrace();
         } finally {
-            util.quickLog("zxcv");
+            util.log("zxcv");
         }
-//        util.quickLog("zxcv");
+//        util.log("zxcv");
     }
 
     //count down throw need to catch at onFinish
@@ -79,19 +77,19 @@ public class Test5_Exception extends Fragment {
             util.makeCountDownTimer_Xinterval(100, new util.CountDownTimerImplementation() {
                 @Override
                 public void onTick(long ms_untilFinish) {
-                    util.quickLog("qwer");
+                    util.log("qwer");
                 }
 
                 @Override
                 public void onFinish() {
-                    util.quickLog("asdf");
+                    util.log("asdf");
                     try {
                         throw new Test5_Exception1();
 //                        throw new Test5_Exception2();
 //                        throw new Test5_Exception3();
                     } catch (Throwable e) {
 //                        e.printStackTrace();
-                        util.quickLog(e.getMessage());
+                        util.log(e.getMessage());
                     }
                 }
             });
@@ -103,10 +101,10 @@ public class Test5_Exception extends Fragment {
     private void test5_button3_onclick(View view){
         try {
             String text = ((EditText)getActivity().findViewById(R.id.test5_editText1)).getText().toString();
-            util.quickLog(viewModel);
+            util.log(viewModel);
             viewModel.setMsgToShow(text!=null?text:"Null");
         } catch (Throwable e){
-            util.quickLog(e.getMessage());
+            util.log(e.getMessage());
         }
 
     }

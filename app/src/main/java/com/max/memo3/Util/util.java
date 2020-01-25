@@ -25,12 +25,12 @@ import android.net.wifi.WifiManager;
 import android.os.BatteryManager;
 import android.os.Build;
 import android.os.CountDownTimer;
-import android.os.Handler;
 import android.os.PersistableBundle;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.DatePicker;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -55,6 +55,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.fragment.app.FragmentActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -68,181 +69,178 @@ import io.realm.RealmResults;
 public class util {
     //BASE
     public static Context APP_CONTEXT;
+    public static FragmentActivity CURR_ACTIVITY;   //fragment act || act
     public static Context CURR_CONTEXT;
-
-    public static void INIT(){
-        init_Vibrator();
-        init_Camera();
-        init_BroadcastReceiver();
-        init_Notification();
-        init_Calender();
-        init_Scheduler();
-        init_Realm();
-//        init_Firestore();
-        init_Service();
-        init_Sensor();
+    public static View CURR_VIEW;  //view || view group
+    private static boolean AppContextseted = false;
+    public static void setAppContext(Context context){
+        if (!AppContextseted){
+            APP_CONTEXT = context;
+            AppContextseted = true;
+        }
+    }
+    public static void setCurrActivity(FragmentActivity activity){
+        CURR_ACTIVITY = activity;
+        CURR_CONTEXT = activity;
+        CURR_VIEW = (ViewGroup)((ViewGroup)activity.findViewById(android.R.id.content)).getChildAt(0);
     }
 
+    //LIFECYCLE
+    private static boolean isInited = false;
+    public static void INIT(){
+        if (isInited){
+            return;
+        } else {
+            init_Vibrator();
+            init_Camera();
+            init_BroadcastReceiver();
+            init_Notification();
+            init_Calender();
+            init_Scheduler();
+//        init_Realm();
+//        init_Firestore();
+            init_Service();
+            init_Sensor();
+            isInited = true;
+        }
+    }
     public static void PAUSE(){
         stopToast();
         stopSnackbar();
         stopVibrator();
     }
-
-    public static void DESTROY(){
-        destroyRealm();
-    }
+//    public static void DESTROY(){
+//        destroyRealm();
+//    }
 
     //TOAST
     private static Toast TOAST;
-    public static void makeToast(CharSequence theThing){
-        if (TOAST !=null){
-            TOAST.cancel();}
-        TOAST = Toast.makeText(CURR_CONTEXT,theThing,Toast.LENGTH_SHORT);
+    public static void makeToast_full(Context context,CharSequence theThing,int duration){
+        TOAST = Toast.makeText(context,theThing!=null?theThing:"Null",duration);
         TOAST.show();
     }
-    public static void makeToast(Context context, CharSequence theThing){
-        if (TOAST !=null){
-            TOAST.cancel();}
-        TOAST = Toast.makeText(context,theThing,Toast.LENGTH_SHORT);
-        TOAST.show();
+    public static void makeToast(Context context,CharSequence theThing){
+        stopToast();
+        makeToast_full(context,theThing,Toast.LENGTH_SHORT);
     }
-    public static void makeToast_wait(CharSequence theThing){
-        TOAST = Toast.makeText(CURR_CONTEXT,theThing,Toast.LENGTH_SHORT);
-        TOAST.show();
+    public static void makeToast(CharSequence theThing){makeToast(CURR_CONTEXT,theThing);}
+    public static void makeToast_diffActivity(FragmentActivity activity, CharSequence theThing){
+        activity.runOnUiThread(() -> makeToast(theThing));
     }
-    public static void makeToast_wait(Context context,CharSequence theThing){
-        TOAST = Toast.makeText(context,theThing,Toast.LENGTH_SHORT);
-        TOAST.show();
+    public static void makeToast_later(FragmentActivity activityToRunOn, CharSequence theThing, long delay){
+        makeTimer(delay, new TimerTask() {
+            @Override
+            public void run() {makeToast_diffActivity(activityToRunOn,theThing);}
+        });
     }
-    public static boolean isShowing_toast(){
-        if (TOAST == null){return false;}
-        return TOAST.getView().isShown();
+    public static void makeToast_repeat(FragmentActivity activity, CharSequence theThing, long interval, int repeat){
+        makeCountDownTimer(interval * repeat, interval, new CountDownTimerImplementation() {
+            @Override
+            public void onTick(long ms_untilFinish) {
+                makeToast_diffActivity(activity,theThing);
+            }
+            @Override
+            public void onFinish() {
+
+            }
+        });
     }
     public static void stopToast(){
-        if (TOAST ==null){return;}
+        if (TOAST == null){return;}
         TOAST.cancel();
         TOAST = null;
     }
 
-    public static ToastRunnable makeToast_runnable(CharSequence theThing){
-        return new ToastRunnable(theThing);
-    }
-    public static TimerTask makeToast_timertask(final CharSequence theThing){
-        final Handler handler = new Handler();
-        return (new TimerTask() {
-            @Override
-            public void run() {
-                handler.post(makeToast_runnable(theThing));
-            }
-        });
-    }
-    public static void makeToast_timer(CharSequence theThing, long delay){
-        Timer timer = new Timer();
-        timer.schedule(makeToast_timertask(theThing),delay);
-    }
-
-
     //LOG
     public static final String LOG_TAG = "gg<3";
-    public static enum SERIOUS_LEVEL {
-        VERBOSE,
-        DEBUG,
-        INFO,
-        WARN,
-        ERROR,
-        ASSERT
-    }
-    public static void quickLog(String message){
-        Log.i(LOG_TAG,message!=null?message:"Null");
-    }
+    public enum SERIOUS_LEVEL {VERBOSE,DEBUG,INFO,WARN,ERROR,ASSERT}
     public static void makeLog(SERIOUS_LEVEL level, String message){
         switch (level){
-            case VERBOSE:
-                Log.v(LOG_TAG,message);
-                break;
-            case DEBUG:
-                Log.d(LOG_TAG,message);
-                break;
-            case INFO:
-                Log.i(LOG_TAG,message);
-                break;
-            case WARN:
-                Log.w(LOG_TAG,message);
-                break;
-            case ERROR:
-                Log.e(LOG_TAG,message);
-                break;
-            case ASSERT:
-                Log.wtf(LOG_TAG,message);
-                break;
+            case VERBOSE:Log.v(LOG_TAG,message);break;
+            case DEBUG:Log.d(LOG_TAG,message);break;
+            case INFO:Log.i(LOG_TAG,message);break;
+            case WARN:Log.w(LOG_TAG,message);break;
+            case ERROR:Log.e(LOG_TAG,message);break;
+            case ASSERT:Log.wtf(LOG_TAG,message);break;
         }
     }
-    public static void quickLog(int message){
-        quickLog(Integer.toString(message));
+    public static void log(String message){
+        makeLog(SERIOUS_LEVEL.DEBUG,message!=null?message:"Null");
     }
-    public static void quickLog(long message){
-        quickLog(Long.toString(message));
-    }
-    public static void quickLog(boolean message){
-        quickLog(message?"TRUE":"FALSE");
-    }
-    public static void quickLog(Object message){quickLog(message.toString());}
+    public static void log(int message){log(Integer.toString(message));}
+    public static void log(long message){log(Long.toString(message));}
+    public static void log(boolean message){log(message?"TRUE":"FALSE");}
+    public static void log(Object message){log(message.toString());}
 
     //TOAST + LOG
-    public static void makeToastLog(SERIOUS_LEVEL level, String message){
-        makeLog(level,message);
-        makeToast(message);
-    }
-    public static void makeToastLog(String message){
-        quickLog(message);
-        makeToast(message);
-    }
-    public static void makeToastLog(Context context, String message){
-        quickLog(message);
+    //no toast in other thread or fire later
+    public static void makeToastLog(Context context,SERIOUS_LEVEL level, String message){
         makeToast(context,message);
+        makeLog(level,message);
+    }
+    public static void makeToastLog(SERIOUS_LEVEL level, String message){makeToastLog(CURR_CONTEXT,level,message);}
+    public static void makeToastLog(Context context, String message){makeToastLog(context,SERIOUS_LEVEL.DEBUG,message);}
+    public static void makeToastLog(String message){
+        makeToastLog(CURR_CONTEXT,SERIOUS_LEVEL.DEBUG,message);
     }
 
     //SNACKBAR
-    private static Snackbar snackbar;
-    private static boolean isShowing_snackbar = false;
+    private static Snackbar SNACKBAR;
+    private static boolean snackbar_isShowing = false;
+    public static void makeSnackbar_full(View view, CharSequence theThing, CharSequence actionStr, SnackbarOnClick snackbarOnClick, SnackbarCallback snackbarCallback){
+        stopSnackbar();
+        SNACKBAR = Snackbar.make(view,theThing,Snackbar.LENGTH_SHORT);
+
+    }
+    public static abstract class SnackbarOnClick implements View.OnClickListener{
+        @Override
+        public abstract void onClick(View v);
+    }
+    public static abstract class SnackbarCallback extends Snackbar.Callback{
+        @Override
+        public abstract void onShown(Snackbar sb);
+        @Override
+        public abstract void onDismissed(Snackbar transientBottomBar, int event);
+    }
+
+
     private static final Snackbar.Callback baseCallback_snackbar = new Snackbar.Callback(){
         @Override
         public void onDismissed(Snackbar transientBottomBar, int event) {
             super.onDismissed(transientBottomBar, event);
-            isShowing_snackbar = false;
+            snackbar_isShowing = false;
         }
         @Override
         public void onShown(Snackbar sb) {
             super.onShown(sb);
-            isShowing_snackbar = true;
-            quickLog("base callback log");
+            snackbar_isShowing = true;
+            log("base callback log");
         }
     };
     public static void makeSnackbar(View view, CharSequence theThing, CharSequence actionStr, View.OnClickListener onClickListener, Snackbar.Callback callback){
-        if (snackbar!=null && isShowing_snackbar){
-            snackbar.dismiss();
+        if (SNACKBAR !=null && snackbar_isShowing){
+            SNACKBAR.dismiss();
         }
-        snackbar = Snackbar.make(view,theThing, Snackbar.LENGTH_SHORT);
+        SNACKBAR = Snackbar.make(view,theThing, Snackbar.LENGTH_SHORT);
         if (actionStr!=null && onClickListener!=null){
-            snackbar.setAction(actionStr,onClickListener);
+            SNACKBAR.setAction(actionStr,onClickListener);
         }
-        snackbar.addCallback(baseCallback_snackbar);
+        SNACKBAR.addCallback(baseCallback_snackbar);
         if (callback!=null){
-            snackbar.addCallback(callback);
+            SNACKBAR.addCallback(callback);
         }
-        snackbar.show();
+        SNACKBAR.show();
     }
     public static void makeSnackbar(View view, CharSequence theThing){
         makeSnackbar(view, theThing,null,null,null);
     }
     public static void stopSnackbar(){
-        if (snackbar!=null){
-            snackbar.dismiss();
-            snackbar = null;
-            isShowing_snackbar = false;
+        if (SNACKBAR !=null){
+            SNACKBAR.dismiss();
+            SNACKBAR = null;
+            snackbar_isShowing = false;
         } else {
-            isShowing_snackbar = false;
+            snackbar_isShowing = false;
         }
     }
 
@@ -360,11 +358,11 @@ public class util {
 
     //TIMER
     //daemon = end autoly if all other non-daemon ended
+    public static void makeTimer(long delay, TimerTask timerTask){
+        new Timer(false).schedule(timerTask,delay);
+    }
     public static void makeTimer_daemon(long delay, TimerTask timerTask){
         new Timer(true).schedule(timerTask,delay);
-    }
-    public static void makeTimer_Xdaemon(long delay, TimerTask timerTask){
-        new Timer(false).schedule(timerTask,delay);
     }
 
     //CAMERA + FLASH
@@ -592,7 +590,7 @@ public class util {
             @Override
             public void execute(Realm realm) {
                 realm.copyToRealmOrUpdate(objectToAdd);
-//                util.quickLog(objectToAdd.toString());
+//                util.log(objectToAdd.toString());
             }
         });
     }
@@ -648,7 +646,7 @@ public class util {
 //            public void onClick(View v) {
 //                Intent intent = signInClient.getSignInIntent();
 //                activity.startActivityForResult(intent,REQUEST_CODE_FIRESTORE_SIGNIN);
-//                quickLog("signing into google now");
+//                log("signing into google now");
 //            }
 //        });
 //        return signInButton;
@@ -866,13 +864,13 @@ public class util {
     public static SP_service.Sensor_data get_SensorData(int sensor_type){
         SP_service.Sensor_data sensor_data = (SP_service.Sensor_data) SP_service.sensor_value.get(sensor_type);
         if (sensor_data == null){
-            quickLog("sensor data not found, cant get data");
-            quickLog("starting service to get data");
+            log("sensor data not found, cant get data");
+            log("starting service to get data");
             startService(null,null,true,null,true,null,null,null);
             return null;
         }
         if (sensor_data_used){
-            quickLog("data used, starting service to get new data");
+            log("data used, starting service to get new data");
             startService(null,null,true,null,true,null,null,null);
             sensor_data_used = false;
             return null;
@@ -882,7 +880,7 @@ public class util {
     }
     public static HashMap<Object, Object> get_SensorDataList(){
         if (sensor_data_used){
-            quickLog("data used, starting service to get new data");
+            log("data used, starting service to get new data");
             startService(null,null,true,null,true,null,null,null);
             sensor_data_used = false;
             return null;
@@ -890,8 +888,8 @@ public class util {
         for (int type : util.SENSOR_TO_SENSE) {
             SP_service.Sensor_data sensor_data = (SP_service.Sensor_data) SP_service.sensor_value.get(type);
             if (sensor_data == null) {
-                quickLog("sensor data not found, cant get data");
-                quickLog("starting service to get data");
+                log("sensor data not found, cant get data");
+                log("starting service to get data");
                 startService(null,null,true,null,true,null,null,null);
                 return null;
             }
@@ -907,64 +905,64 @@ public class util {
 
     //DEVICE DATA
     public static void get_DeviceData() {
-        quickLog("Below is Device Data Information");
+        log("Below is Device Data Information");
 
         //basic device information
-        quickLog("SERIAL: " + Build.SERIAL);
-        quickLog("MODEL: " + Build.MODEL);
-        quickLog("ID: " + Build.ID);
-        quickLog("Manufacture: " + Build.MANUFACTURER);
-        quickLog("brand: " + Build.BRAND);
-        quickLog("type: " + Build.TYPE);
-        quickLog("user: " + Build.USER);
-        quickLog("BASE: " + Build.VERSION_CODES.BASE);
-        quickLog("INCREMENTAL " + Build.VERSION.INCREMENTAL);
-        quickLog("SDK  " + Build.VERSION.SDK);
-        quickLog("BOARD: " + Build.BOARD);
-        quickLog("BRAND " + Build.BRAND);
-        quickLog("HOST " + Build.HOST);
-        quickLog("FINGERPRINT: " + Build.FINGERPRINT);
-        quickLog("Version Code: " + Build.VERSION.RELEASE);
-        quickLog("TIME: " + Build.TIME);
-        quickLog("DISPLAY: " + Build.DISPLAY);
-        quickLog("TAGS: " + Build.TAGS);
+        log("SERIAL: " + Build.SERIAL);
+        log("MODEL: " + Build.MODEL);
+        log("ID: " + Build.ID);
+        log("Manufacture: " + Build.MANUFACTURER);
+        log("brand: " + Build.BRAND);
+        log("type: " + Build.TYPE);
+        log("user: " + Build.USER);
+        log("BASE: " + Build.VERSION_CODES.BASE);
+        log("INCREMENTAL " + Build.VERSION.INCREMENTAL);
+        log("SDK  " + Build.VERSION.SDK);
+        log("BOARD: " + Build.BOARD);
+        log("BRAND " + Build.BRAND);
+        log("HOST " + Build.HOST);
+        log("FINGERPRINT: " + Build.FINGERPRINT);
+        log("Version Code: " + Build.VERSION.RELEASE);
+        log("TIME: " + Build.TIME);
+        log("DISPLAY: " + Build.DISPLAY);
+        log("TAGS: " + Build.TAGS);
         for (int i = 0; i < Build.SUPPORTED_ABIS.length; ++i) {
-            quickLog("SUPPORTED_ABIS: " + Build.SUPPORTED_ABIS[i]);
+            log("SUPPORTED_ABIS: " + Build.SUPPORTED_ABIS[i]);
         }
     }
     public static void get_NetworkData(){
-        quickLog("Below is Network Information");
+        log("Below is Network Information");
 
         ConnectivityManager manager = ((ConnectivityManager) APP_CONTEXT.getSystemService(Context.CONNECTIVITY_SERVICE));
         //all networks type and availability and connected  (btw, NetworkInfo is deprecated from android Q)
         //for seeing all networks in the phone
         for (Network network : manager.getAllNetworks()){
             NetworkInfo info = manager.getNetworkInfo(network);
-            quickLog(info.getTypeName().toUpperCase()+" available? : "+info.isAvailable());
-            quickLog(info.getTypeName().toUpperCase()+" connected? : "+info.isConnected());
+            log(info.getTypeName().toUpperCase()+" available? : "+info.isAvailable());
+            log(info.getTypeName().toUpperCase()+" connected? : "+info.isConnected());
         }
         //for getting the active, usable network in the phone
         NetworkInfo info = manager.getActiveNetworkInfo();
         if (info == null){
-            quickLog("Current active network = null");
+            log("Current active network = null");
         } else {
-            quickLog("Current active network = " + info.getTypeName() + ", and it is " + (info.isConnected() ? "" : "NOT ") + "CONNECTED");
+            log("Current active network = " + info.getTypeName() + ", and it is " + (info.isConnected() ? "" : "NOT ") + "CONNECTED");
         }
         if (info.getTypeName().equals("WIFI")) {
             WifiManager wifiManager = (WifiManager) APP_CONTEXT.getSystemService(Context.WIFI_SERVICE);
             WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-            quickLog("SSID " + wifiInfo.getSSID());
-            quickLog("Frequency " + wifiInfo.getFrequency() + WifiInfo.FREQUENCY_UNITS);
+            log("SSID " + wifiInfo.getSSID());
+            log("Frequency " + wifiInfo.getFrequency() + WifiInfo.FREQUENCY_UNITS);
             int ipAdr = wifiInfo.getIpAddress();    //local ip only
             String ip = String.format("IP Adrress : %02d.%02d.%02d.%02d", (ipAdr >> 0) & 0xff, (ipAdr >> 8) & 0xff, (ipAdr >> 16) & 0xff, (ipAdr >> 24) & 0xff);
-            quickLog(ip);
-            quickLog("MAC addr " + wifiInfo.getMacAddress());
-            quickLog("Link speed " + wifiInfo.getLinkSpeed() + WifiInfo.LINK_SPEED_UNITS);
-            quickLog("Network ID " + wifiInfo.getNetworkId());
-            quickLog("Signal level " + WifiManager.calculateSignalLevel(wifiInfo.getRssi(), 1000));
+            log(ip);
+            log("MAC addr " + wifiInfo.getMacAddress());
+            log("Link speed " + wifiInfo.getLinkSpeed() + WifiInfo.LINK_SPEED_UNITS);
+            log("Network ID " + wifiInfo.getNetworkId());
+            log("Signal level " + WifiManager.calculateSignalLevel(wifiInfo.getRssi(), 1000));
         }
         if (info.getTypeName().equals("MOBILE")) {
-            quickLog("IP address "+getIPAddress(true));
+            log("IP address "+getIPAddress(true));
         }
 
         //other useful(?) stuff that can be set in the manager
@@ -1011,7 +1009,7 @@ public class util {
         return "";
     }
     public static void get_Battery(){
-        quickLog("Below is Battery information");
+        log("Below is Battery information");
 
         //because battery stuff broadcast is sticky, can do it like this
         IntentFilter filter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
@@ -1055,56 +1053,56 @@ public class util {
             makeToastLog("service not started, can't get data");
             return;
         }
-        quickLog("Below is Bluetooth device information");
+        log("Below is Bluetooth device information");
         BluetoothDevice bluetoothDevice = SP_service.getBluetoothDevice();
         if (bluetoothDevice == null){
-            quickLog("No Bluetooth device connected currently");
+            log("No Bluetooth device connected currently");
             return;
         }
         makeToastLog("Name = "+bluetoothDevice.getName());
-        quickLog("Address = "+bluetoothDevice.getAddress());
+        log("Address = "+bluetoothDevice.getAddress());
     }
     public static void get_Sensor(){
-        quickLog("Below is Sensor Data");
+        log("Below is Sensor Data");
         if (SP_service.sensor_value.size() == 0){
-            quickLog("no data in map");
+            log("no data in map");
         }
         for (int type : SENSOR_TO_SENSE){
             SP_service.Sensor_data sensor = (SP_service.Sensor_data) SP_service.sensor_value.get(type);
             if (sensor != null) {
-                quickLog(sensor.name+" data = "+sensor.value);
+                log(sensor.name+" data = "+sensor.value);
             }
         }
     }
 //    public static void get_Google(){
 //        if (signInAccount == null){
-//            quickLog("no ac signed in currently");
+//            log("no ac signed in currently");
 //            return;
 //        }
-//        quickLog("Below is Logined Google Account Information");
-//        quickLog("Display name: "+signInAccount.getDisplayName());
-//        quickLog("Family name: "+signInAccount.getFamilyName());
-//        quickLog("Given name: "+signInAccount.getGivenName());
-//        quickLog("Email: "+signInAccount.getEmail());
-//        quickLog("ID: "+signInAccount.getId());
-//        quickLog("ID token: "+signInAccount.getIdToken());
-//        quickLog("Server Auth Code: "+signInAccount.getServerAuthCode());
+//        log("Below is Logined Google Account Information");
+//        log("Display name: "+signInAccount.getDisplayName());
+//        log("Family name: "+signInAccount.getFamilyName());
+//        log("Given name: "+signInAccount.getGivenName());
+//        log("Email: "+signInAccount.getEmail());
+//        log("ID: "+signInAccount.getId());
+//        log("ID token: "+signInAccount.getIdToken());
+//        log("Server Auth Code: "+signInAccount.getServerAuthCode());
 //    }
 //    public static void get_Firebase(){
 //        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 //        if (firebaseUser==null){
-//            quickLog("firebase not logged in, bye");
+//            log("firebase not logged in, bye");
 //            return;
 //        }else {
-//            quickLog("Below is Logined Firebase Account Information");
-//            quickLog("getDisplayName "+firebaseUser.getDisplayName());
-//            quickLog("getEmail "+firebaseUser.getEmail());
-//            quickLog("getPhoneNumber "+firebaseUser.getPhoneNumber());
-//            quickLog("getProviderId "+firebaseUser.getProviderId());
-//            quickLog("getUid "+firebaseUser.getUid());
-//            quickLog("getProviders().size() "+firebaseUser.getProviders().size());
-//            quickLog("getProviders().get(0) "+firebaseUser.getProviders().get(0));
-//            quickLog("isEmailVerified "+firebaseUser.isEmailVerified());
+//            log("Below is Logined Firebase Account Information");
+//            log("getDisplayName "+firebaseUser.getDisplayName());
+//            log("getEmail "+firebaseUser.getEmail());
+//            log("getPhoneNumber "+firebaseUser.getPhoneNumber());
+//            log("getProviderId "+firebaseUser.getProviderId());
+//            log("getUid "+firebaseUser.getUid());
+//            log("getProviders().size() "+firebaseUser.getProviders().size());
+//            log("getProviders().get(0) "+firebaseUser.getProviders().get(0));
+//            log("isEmailVerified "+firebaseUser.isEmailVerified());
 //        }
 //    }
 

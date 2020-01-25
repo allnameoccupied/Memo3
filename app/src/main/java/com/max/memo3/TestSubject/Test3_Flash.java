@@ -14,9 +14,6 @@ import android.widget.ToggleButton;
 import com.max.memo3.R;
 import com.max.memo3.Util.util;
 
-import java.util.Arrays;
-import java.util.TimerTask;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -67,38 +64,38 @@ public class Test3_Flash extends Fragment {
     //true(on) -> true(on) wont trigger
     private void test3_toggle1_onclick(CompoundButton buttonView, boolean isChecked){
 //        if (isChecked){
-//            util.quickLog("toggle now is ON");
+//            util.log("toggle now is ON");
 ////            switch1.setChecked(false);
 ////            switchON();
 //        } else {
-//            util.quickLog("toggle now is OFF");
+//            util.log("toggle now is OFF");
 //        }
 //        try {
 //            cameraManager.setTorchMode(flashID,isChecked);
 //        } catch (CameraAccessException e) {
 //            e.printStackTrace();
 //        }
-        util.quickLog("toggle now is "+isChecked);
+        util.log("toggle now is "+isChecked);
         util.makeFlash(isChecked);
     }
     private void test3_switch1_onclick(CompoundButton buttonView, boolean isChecked){
 //        if (isChecked){
-//            util.quickLog("switch now is ON");
+//            util.log("switch now is ON");
 ////            toggleButton1.setChecked(false);
 //        } else {
-//            util.quickLog("switch now is OFF");
+//            util.log("switch now is OFF");
 //        }
 //        try {
 //            cameraManager.setTorchMode(flashID,isChecked);
 //        } catch (CameraAccessException e) {
 //            e.printStackTrace();
 //        }
-        util.quickLog("switch now is "+isChecked);
+        util.log("switch now is "+isChecked);
         util.makeFlash(isChecked);
     }
     private void test3_button1_onclick(View view){
 //        util.makeFlash_ON();
-//        util.makeTimer_Xdaemon(3000, new TimerTask() {
+//        util.makeTimer(3000, new TimerTask() {
 //            @Override
 //            public void run() {
 //                util.makeFlash_OFF();
@@ -108,7 +105,7 @@ public class Test3_Flash extends Fragment {
             @Override
             public void onTick(long ms_untilFinish) {
                 util.makeFlash_ON();
-                util.quickLog("Qwer");
+                util.log("Qwer");
             }
 
             @Override
@@ -123,8 +120,8 @@ public class Test3_Flash extends Fragment {
         String[] strings;
         try {
             strings = cameraManager.getCameraIdList();
-            util.quickLog(strings.length);
-//            Arrays.asList(strings).forEach(util::quickLog);
+            util.log(strings.length);
+//            Arrays.asList(strings).forEach(util::log);
             cameraManager.setTorchMode(strings[0],true);
         } catch (CameraAccessException e) {
             e.printStackTrace();

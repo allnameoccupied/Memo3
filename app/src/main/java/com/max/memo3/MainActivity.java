@@ -11,7 +11,6 @@ import com.max.memo3.Util.util;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
@@ -24,9 +23,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         //util init msg
-        util.quickLog("STARTSTART GOGOGO");
-        util.APP_CONTEXT = getApplicationContext();
-        util.CURR_CONTEXT = this;
+        util.log("STARTSTART GOGOGO");
+        util.setAppContext(getApplicationContext());
+        util.setCurrActivity(this);
         util.INIT();
 
         //toolbar 1
@@ -46,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
         //button
         Button button = findViewById(R.id.main_button);
         button.setOnClickListener(v -> {
-            util.quickLog("pressed main button");
+            util.log("pressed main button");
             startActivity(new Intent(getApplicationContext(), Test0_Main.class));
         });
     }
@@ -68,12 +67,12 @@ public class MainActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.menu_main_settings) {
 //            util.makeToast("menu_main_settings pressed");
-            util.quickLog("menu_main_settings pressed");
+            util.log("menu_main_settings pressed");
             return true;
         }
         if (id == R.id.menu_main_test) {
 //            util.makeToast("menu_main_test pressed");
-            util.quickLog("menu_main_test pressed");
+            util.log("menu_main_test pressed");
             return true;
         }
 

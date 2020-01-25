@@ -85,7 +85,7 @@ public class Test2_Timer extends Fragment {
             @Override
             public void onFinish() {
                 textView.setText("0");
-                util.quickLog("countdown finished");
+                util.log("countdown finished");
             }
         });
     }
@@ -94,13 +94,13 @@ public class Test2_Timer extends Fragment {
 //        timer.schedule(new TimerTask() {
 //            @Override
 //            public void run() {
-//                util.quickLog("5s passed");
+//                util.log("5s passed");
 //            }
 //        },5000);
-        util.makeTimer_Xdaemon(5000, new TimerTask() {
+        util.makeTimer(5000, new TimerTask() {
             @Override
             public void run() {
-                util.quickLog("5s passed");
+                util.log("5s passed");
             }
         });
     }

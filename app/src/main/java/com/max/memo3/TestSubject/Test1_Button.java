@@ -48,10 +48,10 @@ public class Test1_Button extends Fragment {
     private void button12_onclick(View view){
         switch (view.getId()){
             case R.id.test1_button1:
-                util.quickLog("button 1 pressed");
+                util.log("button 1 pressed");
                 break;
             case R.id.test1_button2:
-                util.quickLog("button 2 pressed");
+                util.log("button 2 pressed");
                 break;
         }
     }
@@ -60,10 +60,10 @@ public class Test1_Button extends Fragment {
     private void button12_onclick_listener(View view){
         switch (view.getId()){
             case R.id.test1_button1:
-                util.quickLog("button 1 pressed");
+                util.log("button 1 pressed");
                 break;
             case R.id.test1_button2:
-                util.quickLog("button 2 pressed");
+                util.log("button 2 pressed");
                 break;
         }
     }
@@ -72,10 +72,10 @@ public class Test1_Button extends Fragment {
     private View.OnClickListener button34_onclick = v -> {
         switch (v.getId()){
             case R.id.test1_button3:
-                util.quickLog("button 3 pressed");
+                util.log("button 3 pressed");
                 break;
             case R.id.test1_button4:
-                util.quickLog("button 4 pressed");
+                util.log("button 4 pressed");
                 break;
         }
     };
@@ -86,7 +86,7 @@ public class Test1_Button extends Fragment {
 
     //button5, spawn & show textview
     private void button5_onclick_listener(View view){
-        util.quickLog("button 5 pressed");
+        util.log("button 5 pressed");
         TextView tempView = view.getRootView().findViewById(R.id.test1_text1);
         tempView.setText("button 5 pressed");
         tempView.setVisibility(View.VISIBLE);
@@ -106,7 +106,7 @@ public class Test1_Button extends Fragment {
 //        ConstraintLayout constraintLayout = view.getRootView().findViewById(R.id.test1_frag);
 //        ConstraintSet set = new ConstraintSet();
 //        set.clone(constraintLayout);
-////        util.quickLog(qwer);
+////        util.log(qwer);
 ////        set.connect(textView.getId(),ConstraintSet.TOP,R.id.test1_text1,ConstraintSet.BOTTOM, qwer);
 //        set.applyTo(constraintLayout);
 //
@@ -116,7 +116,7 @@ public class Test1_Button extends Fragment {
 
     //button6, despawn & hide textview
     private void button6_onclick_listener(View view){
-        util.quickLog("button 6 pressed");
+        util.log("button 6 pressed");
         view.getRootView().findViewById(R.id.test1_text1).setVisibility(View.INVISIBLE);
 
 //        textViewList.forEach(textView -> ((ConstraintLayout)view.getRootView().findViewById(R.id.test1_frag)).removeView(textView));
