@@ -88,7 +88,7 @@ public class Test0_frag extends Fragment {
         util.log("Test 3 : "+"flash light, toggle button, style.xml");
         util.log("Test 4 : "+"firestore");
         util.log("Test 5 : "+"exception, view model, data binding");
-        util.log("Test 6 : "+"realm, util stuff");
+        util.log("Test 6 : "+"realm, util stuff, notification");
     }
 
     @Override

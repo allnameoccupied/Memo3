@@ -80,7 +80,7 @@ public class Test1_Button extends Fragment {
         }
     };
 
-    //TODO programmatically create a textview with margin in view created fragment
+    //skipped : programmatically create a textview with margin in view created fragment
 //    private TextView textView;
 //    private ArrayList<TextView> textViewList = new ArrayList<>();
 

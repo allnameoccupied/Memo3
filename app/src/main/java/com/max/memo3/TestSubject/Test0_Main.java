@@ -2,9 +2,11 @@ package com.max.memo3.TestSubject;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.Navigation;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,7 +24,8 @@ public class Test0_Main extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test0_main);
-        viewModel = ViewModelProviders.of(this).get(Test_ViewModel.class);
+//        viewModel = ViewModelProviders.of(this).get(Test_ViewModel.class);
+        viewModel = new ViewModelProvider(this).get(Test_ViewModel.class);
 
         //util init
         util.setCurrActivity(this);
@@ -67,5 +70,11 @@ public class Test0_Main extends AppCompatActivity {
         } else {
             Navigation.findNavController(this,R.id.Test0_main_fragment_frag).navigate(R.id.test0_Main_nav);
         }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        util.log("qwer");
     }
 }

@@ -58,13 +58,13 @@ public class Test2_Timer extends Fragment {
 //                .vibrate(VibrationEffect.createOneShot(1000,VibrationEffect.DEFAULT_AMPLITUDE));
 //                .vibrate(VibrationEffect.createOneShot(1000,50));
 //                .vibrate(VibrationEffect.createOneShot(1000,250));
-        util.makeVibrate(1000,50);
+        util.makeVibrate_full(1000,50);
     }
     private void test2_button2_onclick(View view){
         util.makeVibrate(1000);
     }
     private void test2_button3_onclick(View view){
-        util.makeVibrate(1000,250);
+        util.makeVibrate_full(1000,250);
     }
     private void test2_button4_onclick(View view){
         long[] timings = {100,1000,100};

@@ -2,6 +2,7 @@ package com.max.memo3.Util;
 
 import android.app.AlarmManager;
 import android.app.DatePickerDialog;
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -24,6 +25,7 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.BatteryManager;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.PersistableBundle;
 import android.os.VibrationEffect;
@@ -37,6 +39,7 @@ import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.max.memo3.Background.Broadcast_Receiver;
+import com.max.memo3.Background.MEMO3_BroadcastReceiver;
 import com.max.memo3.Background.SP_service;
 import com.max.memo3.R;
 
@@ -46,15 +49,16 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.core.app.RemoteInput;
 import androidx.fragment.app.FragmentActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import io.realm.Realm;
@@ -91,10 +95,11 @@ public class util {
         if (isInited){
             return;
         } else {
+            init_Notification();
             init_Vibrator();
+
             init_Camera();
             init_BroadcastReceiver();
-            init_Notification();
             init_Calender();
             init_Scheduler();
 //        init_Realm();
@@ -115,11 +120,11 @@ public class util {
 
     //TOAST
     private static Toast TOAST;
-    public static void makeToast_full(Context context,CharSequence theThing,int duration){
+    public static void makeToast_full(Context context, CharSequence theThing, int duration){
         TOAST = Toast.makeText(context,theThing!=null?theThing:"Null",duration);
         TOAST.show();
     }
-    public static void makeToast(Context context,CharSequence theThing){
+    public static void makeToast(Context context, CharSequence theThing){
         stopToast();
         makeToast_full(context,theThing,Toast.LENGTH_SHORT);
     }
@@ -135,14 +140,8 @@ public class util {
     }
     public static void makeToast_repeat(FragmentActivity activity, CharSequence theThing, long interval, int repeat){
         makeCountDownTimer(interval * repeat, interval, new CountDownTimerImplementation() {
-            @Override
-            public void onTick(long ms_untilFinish) {
-                makeToast_diffActivity(activity,theThing);
-            }
-            @Override
-            public void onFinish() {
-
-            }
+            @Override public void onTick(long ms_untilFinish) {makeToast_diffActivity(activity,theThing);}
+            @Override public void onFinish() {}
         });
     }
     public static void stopToast(){
@@ -171,6 +170,7 @@ public class util {
     public static void log(long message){log(Long.toString(message));}
     public static void log(boolean message){log(message?"TRUE":"FALSE");}
     public static void log(Object message){log(message.toString());}
+    public static void log(){log("log");}
 
     //TOAST + LOG
     //no toast in other thread or fire later
@@ -185,13 +185,36 @@ public class util {
     }
 
     //SNACKBAR
+    //TODO custom snackbar
     private static Snackbar SNACKBAR;
     private static boolean snackbar_isShowing = false;
-    public static void makeSnackbar_full(View view, CharSequence theThing, CharSequence actionStr, SnackbarOnClick snackbarOnClick, SnackbarCallback snackbarCallback){
+    public static void makeSnackbar_full(View view, CharSequence theThing, CharSequence actionStr, SnackbarOnClick snackbarOnClick, SnackbarCallback... snackbarCallbacks){
         stopSnackbar();
-        SNACKBAR = Snackbar.make(view,theThing,Snackbar.LENGTH_SHORT);
-
+        SNACKBAR = Snackbar.make(view, theThing, Snackbar.LENGTH_SHORT);
+        if (actionStr != null && snackbarOnClick != null) {
+            SNACKBAR.setAction(actionStr, snackbarOnClick);
+        }
+        SNACKBAR.addCallback(snackbar_Callback_Base);
+        if (snackbarCallbacks!=null) {
+            for (SnackbarCallback snackbarCallback : snackbarCallbacks) {
+                SNACKBAR.addCallback(snackbarCallback);
+            }
+        }
+        SNACKBAR.show();
     }
+    public static void makeSnackbar(View view, CharSequence theThing){makeSnackbar_full(view,theThing,null,null, (SnackbarCallback[]) null);}
+    public static void makeSnackbar(CharSequence theThing){makeSnackbar(CURR_VIEW,theThing);}
+    public static void stopSnackbar(){
+        if (SNACKBAR !=null){
+            SNACKBAR.dismiss();
+            SNACKBAR = null;
+            snackbar_isShowing = false;
+        } else {
+            snackbar_isShowing = false;
+        }
+    }
+    public static boolean isSnackbarShowing(){return snackbar_isShowing;}
+
     public static abstract class SnackbarOnClick implements View.OnClickListener{
         @Override
         public abstract void onClick(View v);
@@ -202,108 +225,152 @@ public class util {
         @Override
         public abstract void onDismissed(Snackbar transientBottomBar, int event);
     }
-
-
-    private static final Snackbar.Callback baseCallback_snackbar = new Snackbar.Callback(){
-        @Override
-        public void onDismissed(Snackbar transientBottomBar, int event) {
-            super.onDismissed(transientBottomBar, event);
-            snackbar_isShowing = false;
-        }
-        @Override
-        public void onShown(Snackbar sb) {
-            super.onShown(sb);
+    private static final Snackbar.Callback snackbar_Callback_Base = new SnackbarCallback() {
+        @Override public void onShown(Snackbar sb) {
             snackbar_isShowing = true;
-            log("base callback log");
+//            log("snackbar show");
+        }
+        @Override public void onDismissed(Snackbar transientBottomBar, int event) {
+            snackbar_isShowing = false;
+//            log("snackbar dismiss");
         }
     };
-    public static void makeSnackbar(View view, CharSequence theThing, CharSequence actionStr, View.OnClickListener onClickListener, Snackbar.Callback callback){
-        if (SNACKBAR !=null && snackbar_isShowing){
-            SNACKBAR.dismiss();
-        }
-        SNACKBAR = Snackbar.make(view,theThing, Snackbar.LENGTH_SHORT);
-        if (actionStr!=null && onClickListener!=null){
-            SNACKBAR.setAction(actionStr,onClickListener);
-        }
-        SNACKBAR.addCallback(baseCallback_snackbar);
-        if (callback!=null){
-            SNACKBAR.addCallback(callback);
-        }
-        SNACKBAR.show();
-    }
-    public static void makeSnackbar(View view, CharSequence theThing){
-        makeSnackbar(view, theThing,null,null,null);
-    }
-    public static void stopSnackbar(){
-        if (SNACKBAR !=null){
-            SNACKBAR.dismiss();
-            SNACKBAR = null;
-            snackbar_isShowing = false;
-        } else {
-            snackbar_isShowing = false;
-        }
-    }
 
     //NOTIFICATION
-    private static Map<String,Custom_Notification_Channel> allCustomNotiChannel;
-    private static AtomicInteger notification_count = new AtomicInteger(1);
-    private static final String DEFAULT_CHANNELID = "MAX_CHANNEL";
+    private static NotificationManagerCompat notiManager;
+    public static final String NOTI_CHANNELID_DEFAULT = "MEMO3_NOTICHANNEL_ID";
+    private static final String NOTI_ID_KEY_IN_EXTRAS = "noti_id_key_in_extras";
+    private static AtomicInteger notiCount = new AtomicInteger(1);
     private static void init_Notification(){
-        //init default notification channel
-        NotificationChannel notificationChannel = new NotificationChannel(DEFAULT_CHANNELID,"MAX_MEMO_Default_Channel", NotificationManager.IMPORTANCE_DEFAULT);
-        notificationChannel.setDescription("Default notification channel for MAX MEMO");
-        APP_CONTEXT.getSystemService(NotificationManager.class).createNotificationChannel(notificationChannel);
+        //get noti manager
+        notiManager = NotificationManagerCompat.from(APP_CONTEXT);
 
-        //init vector
-        allCustomNotiChannel = new HashMap<>();
+        //make default channel
+        NotificationChannel defaultChannel = new NotificationChannel(NOTI_CHANNELID_DEFAULT,"Default Channel", NotificationManager.IMPORTANCE_HIGH);
+        defaultChannel.setDescription("Default Notification Channel for MEMO3");
+        defaultChannel.enableVibration(true);
+        defaultChannel.enableLights(false);
+        defaultChannel.setLockscreenVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+        notiManager.createNotificationChannel(defaultChannel);
     }
-    public static void makeNotificationChannel(String channel_id_string, CharSequence name_charSeq, String description_string, int importance){
-        if (channel_id_string == DEFAULT_CHANNELID){return;}
-        if (allCustomNotiChannel.containsKey(channel_id_string)){return;}
-        NotificationChannel notificationChannel = new NotificationChannel(channel_id_string,name_charSeq,importance);
-        notificationChannel.setDescription(description_string);
-        CURR_CONTEXT.getSystemService(NotificationManager.class).createNotificationChannel(notificationChannel);
-        Custom_Notification_Channel customChannel = new Custom_Notification_Channel(channel_id_string,name_charSeq,description_string,importance);
-        allCustomNotiChannel.put(channel_id_string,customChannel);
+    public static void makeNotification(NotiBuilder notiBuilder){
+        notiManager.notify(notiBuilder.notiID,notiBuilder.build());
     }
-    public static int makeNotification(String channel_id_string, CharSequence title_charSeq, CharSequence text_charSeq, int priority){
-        int noti_id = notification_count.incrementAndGet();
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(CURR_CONTEXT,channel_id_string)
-                .setSmallIcon(R.mipmap.ic_launcher_round)
-                .setContentTitle(title_charSeq)
-                .setContentText(text_charSeq)
-                .setStyle(new NotificationCompat.BigTextStyle().bigText(text_charSeq))
-                .setPriority(priority);
-        NotificationManagerCompat.from(CURR_CONTEXT).notify(noti_id,builder.build());
-        return noti_id;
+    public static void makeNotification(CharSequence title, CharSequence text){
+        makeNotification(new NotiBuilder(title,text));
     }
-    public static int makeNotification(CharSequence title_charSeq, CharSequence text_charSeq){
-        return makeNotification(DEFAULT_CHANNELID,title_charSeq,text_charSeq,NotificationManager.IMPORTANCE_DEFAULT);
+    public static void makeNotification(Notification notification){
+        notiManager.notify(notiCount.incrementAndGet(),notification);
     }
-    public static int makeNotification_wchannel(String channel_id_string, CharSequence name_charSeq, String description_string, int importance,
-                                                CharSequence title_charSeq, CharSequence text_charSeq, int priority){
-        makeNotificationChannel(channel_id_string,name_charSeq,description_string,importance);
-        return makeNotification(channel_id_string,title_charSeq,text_charSeq,priority);
+    public static class NotiBuilder{
+        private static final int NOTI_DEFAULT_COLOUR = 0x00bfff;
+        private NotificationCompat.Builder builder;
+        private int notiID;
+        public NotiBuilder(@NonNull CharSequence contentTitle,@NonNull CharSequence contentText){
+            notiID = notiCount.incrementAndGet();
+            builder = new NotificationCompat.Builder(APP_CONTEXT,NOTI_CHANNELID_DEFAULT);
+            builder.setDefaults(NotificationCompat.DEFAULT_ALL);
+            builder.setSmallIcon(R.drawable.ic_stat_name);
+            builder.setContentTitle(contentTitle);
+            builder.setContentText(contentText);
+            builder.setColorized(true);
+            builder.setColor(NOTI_DEFAULT_COLOUR);
+            builder.setAutoCancel(true);
+            builder.setBadgeIconType(NotificationCompat.BADGE_ICON_SMALL);
+            builder.setOngoing(false);
+        }
+
+        public NotiBuilder setSubText(CharSequence subText){builder.setSubText(subText);return this;}
+        public NotiBuilder setStyle(NotificationCompat.Style style){builder.setStyle(style);return this;}
+        public NotiBuilder setAutoCancel(boolean isAutoCancel){builder.setAutoCancel(isAutoCancel);return this;}
+        public NotiBuilder setOnPressAction(String action, Runnable runnable, Bundle extraBundle){
+            Intent intent = new Intent(APP_CONTEXT, MEMO3_BroadcastReceiver.class);
+            intent.setAction(action);
+            intent.putExtra(NOTI_ID_KEY_IN_EXTRAS,notiID);
+            if (extraBundle != null) {
+                intent.putExtras(extraBundle);
+            }
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(APP_CONTEXT,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
+            builder.setContentIntent(pendingIntent);
+            //TODO move to service
+//            MEMO3_BroadcastReceiver.setActionMapElement(action,runnable);
+            return this;
+        }
+        public NotiBuilder setOnPressAction(String action, Runnable runnable){return setOnPressAction(action,runnable,null);}
+        public NotiBuilder setBottomAction(NotiBottomActionBuilder action1, NotiBottomActionBuilder action2, NotiBottomActionBuilder action3){
+            if (action1 != null){
+                action1.setNotiID(this.notiID);
+                builder.addAction(action1.build());
+            }
+            if (action2 != null){
+                action2.setNotiID(this.notiID);
+                builder.addAction(action2.build());
+            }
+            if (action3 != null){
+                action3.setNotiID(this.notiID);
+                builder.addAction(action3.build());
+            }
+            return this;
+        }
+        public static class NotiBottomActionBuilder{
+            int notiId;
+            CharSequence action;
+            CharSequence notiLabel;
+            Bundle extraBundle = null;
+            public NotiBottomActionBuilder(@NonNull CharSequence action,@NonNull CharSequence notiLabel){
+                this.action = action;
+                this.notiLabel = notiLabel;
+            }
+            protected NotiBottomActionBuilder setNotiID(int ID){this.notiId = ID;return this;}
+            public NotiBottomActionBuilder setExtraBundle(Bundle extraBundle){this.extraBundle = extraBundle;return this;}
+            protected NotificationCompat.Action build(){
+                Intent intent = new Intent(APP_CONTEXT,MEMO3_BroadcastReceiver.class);
+                intent.setAction(action.toString());
+                intent.putExtra(NOTI_ID_KEY_IN_EXTRAS,notiId);
+                if (extraBundle != null){
+                    intent.putExtras(extraBundle);
+                }
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(APP_CONTEXT,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
+                return new NotificationCompat.Action(0, notiLabel,pendingIntent);
+            }
+        }
+        public static class NotiBottomActionRemoteInputBuilder extends NotiBottomActionBuilder{
+            private CharSequence resultKey;
+            private CharSequence label;
+            public NotiBottomActionRemoteInputBuilder(@NonNull CharSequence action,@NonNull CharSequence notiTitle,@NonNull CharSequence resultKey,@NonNull CharSequence label){
+                super(action, notiTitle);
+                this.resultKey = resultKey;
+                this.label = label;
+            }
+            @Override
+            protected NotificationCompat.Action build(){
+                RemoteInput remoteInput = new RemoteInput.Builder(resultKey.toString()).setLabel(label).build();
+                Intent intent = new Intent(APP_CONTEXT,MEMO3_BroadcastReceiver.class);
+                intent.setAction(action.toString());
+                intent.putExtra(NOTI_ID_KEY_IN_EXTRAS,notiId);
+                if (extraBundle != null){
+                    intent.putExtras(extraBundle);
+                }
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(APP_CONTEXT,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
+                return new NotificationCompat.Action.Builder(0, notiLabel,pendingIntent).addRemoteInput(remoteInput).setAllowGeneratedReplies(false).build();
+            }
+        }
+        public NotiBuilder setHistory(CharSequence[] history){builder.setRemoteInputHistory(history);return this;}
+        public NotiBuilder setProgress(){builder.setProgress(0,0,true);return this;}
+        public NotiBuilder setProgress(int max, int now){builder.setProgress(max,now,false);return this;}
+        public NotiBuilder setOngoing(boolean isOngoing){builder.setOngoing(isOngoing);return this;}
+        public NotiBuilder setTimeoutAfter(long ms){builder.setTimeoutAfter(ms);return this;}
+        private Notification build(){return builder.build();}
     }
 
     //VIBRATOR  (max amplitude = 255)
     private static Vibrator vibrator;
-    private static void init_Vibrator(){
-        vibrator = (Vibrator) APP_CONTEXT.getSystemService(Context.VIBRATOR_SERVICE);
-    }
-    public static boolean makeVibrate(long ms){
-////        vibrator.cancel();
-//        stopVibrator();
-//        vibrator.vibrate(VibrationEffect.createOneShot(ms,VibrationEffect.DEFAULT_AMPLITUDE));
-//        return true;
-        return makeVibrate(ms,VibrationEffect.DEFAULT_AMPLITUDE);
-    }
-    public static boolean makeVibrate(long ms, int amplitude){
-//        vibrator.cancel();
+    private static void init_Vibrator(){vibrator = (Vibrator) APP_CONTEXT.getSystemService(Context.VIBRATOR_SERVICE);}
+    public static void makeVibrate_full(long ms, int amplitude){
         stopVibrator();
         vibrator.vibrate(VibrationEffect.createOneShot(ms,amplitude));
-        return true;
     }
+    public static void makeVibrate(long ms){makeVibrate_full(ms,VibrationEffect.DEFAULT_AMPLITUDE);}
     public static boolean makeVibrate(long[] ms, int[] amplitude, int repeat){
         if (ms.length!=amplitude.length){
             return false;
@@ -319,9 +386,7 @@ public class util {
         vibrator.vibrate(VibrationEffect.createWaveform(ms,repeat));
         return true;
     }
-    public static void stopVibrator(){
-        vibrator.cancel();
-    }
+    public static void stopVibrator(){vibrator.cancel();}
 
     //COUNT DOWN TIMER
     //interval will run once on start
