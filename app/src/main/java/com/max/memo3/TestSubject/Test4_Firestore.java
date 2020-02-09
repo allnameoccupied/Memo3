@@ -211,7 +211,7 @@ public class Test4_Firestore extends Fragment {
                     } else {
                         util.log("asdf");
                     }
-                });
+                }).addOnCompleteListener(command -> util.log("qwqw"));
     }
 
     private void test4_button6_onclick(View view){

@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
+@Deprecated
 public class Custom_Scheduler_Record_JobService extends RealmObject {
     //var
     private String action;

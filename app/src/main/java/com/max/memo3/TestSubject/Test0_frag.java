@@ -50,6 +50,7 @@ public class Test0_frag extends Fragment {
         view.findViewById(R.id.test0to4).setOnClickListener(Test0_frag.this::onButtonClick);
         view.findViewById(R.id.test0to5).setOnClickListener(Test0_frag.this::onButtonClick);
         view.findViewById(R.id.test0to6).setOnClickListener(Test0_frag.this::onButtonClick);
+        view.findViewById(R.id.test0to7).setOnClickListener(Test0_frag.this::onButtonClick);
     }
 
     @Override
@@ -78,6 +79,9 @@ public class Test0_frag extends Fragment {
             case R.id.test0to6:
                 navController.navigate(R.id.test6_Realm_nav);
                 break;
+            case R.id.test0to7:
+                navController.navigate(R.id.test7_Background_nav);
+                break;
         }
     }
 
@@ -89,6 +93,7 @@ public class Test0_frag extends Fragment {
         util.log("Test 4 : "+"firestore");
         util.log("Test 5 : "+"exception, view model, data binding");
         util.log("Test 6 : "+"realm, util stuff, notification");
+        util.log("Test 7 : "+"broadcast receiver, service");
     }
 
     @Override

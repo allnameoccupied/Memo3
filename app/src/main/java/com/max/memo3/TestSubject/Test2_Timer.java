@@ -71,7 +71,7 @@ public class Test2_Timer extends Fragment {
         int[] amplitudes = {50,100,250};
 //        ((Vibrator)getContext().getSystemService(Context.VIBRATOR_SERVICE))
 //                .vibrate(VibrationEffect.createWaveform(timings,amplitudes,-1));
-        util.makeVibrate(timings,amplitudes,-1);
+        util.makeVibrate_pattern(timings,amplitudes,-1);
     }
     private void test2_button5_onclick(View view){
         TextView textView = getActivity().findViewById(R.id.test2_textview1);

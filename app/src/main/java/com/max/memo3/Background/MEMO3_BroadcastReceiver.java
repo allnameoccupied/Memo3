@@ -15,13 +15,13 @@ import java.util.Map;
 import androidx.core.app.RemoteInput;
 
 public class MEMO3_BroadcastReceiver extends BroadcastReceiver {
-    //TODO move to service
+    //TODO move to service or put what to run below
 //    private static Map<String,Runnable> actionMap = new HashMap<>();
 //    public static void setActionMapElement(String action, Runnable runnable){actionMap.put(action,runnable);}
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        util.log("qwer");
+        util.log("MEMO3 BR received");
         switch (intent.getAction()){
             case "test6_1":
                 util.log("asdf");
@@ -66,6 +66,9 @@ public class MEMO3_BroadcastReceiver extends BroadcastReceiver {
                 break;
             case "wsx":
                 util.log("tgb");
+                break;
+            case "test":
+                util.log("qwer");
                 break;
         }
     }

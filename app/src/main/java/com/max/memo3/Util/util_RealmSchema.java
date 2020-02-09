@@ -5,7 +5,7 @@ import io.realm.FieldAttribute;
 import io.realm.RealmMigration;
 import io.realm.RealmSchema;
 
-public class Custom_Realm_Migration implements RealmMigration {
+public class util_RealmSchema implements RealmMigration {
     @Override
     public void migrate(DynamicRealm realm, long oldVersion, long newVersion) {
         RealmSchema schema = realm.getSchema();
@@ -53,9 +53,15 @@ public class Custom_Realm_Migration implements RealmMigration {
         }
 
         //version 3 : 12/7/2019 15:07
-        //new class = MemoRecord
+        //new class = MemoRecord (dont 5/2/2020)
         if (oldVersion == 2){
-            schema.create("MemoRecord");
+//            schema.create("MemoRecord");
+            oldVersion++;
+        }
+
+        //version 4 : 4/2/2020 22:37
+        //nothing new, just mark a new number
+        if (oldVersion == 3){
             oldVersion++;
         }
     }

@@ -9,6 +9,7 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.Log;
 
+@Deprecated
 public class Intent_service extends IntentService implements SensorEventListener {
     //var
     private SensorManager sensorManager;

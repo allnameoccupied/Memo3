@@ -12,6 +12,7 @@ import com.max.memo3.Util.util;
 import java.util.ArrayList;
 import java.util.List;
 
+@Deprecated
 public class Broadcast_Receiver extends BroadcastReceiver {
     //var
     private static List<String> allActionRegistered = new ArrayList<>();

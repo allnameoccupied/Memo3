@@ -34,9 +34,16 @@
             </intent-filter>
         </activity>
 
+<!--        need define in manifest for notification BR-->
         <receiver
             android:name=".Background.MEMO3_BroadcastReceiver">
+            <intent-filter>
+                <action android:name="test"/>
+            </intent-filter>
         </receiver>
+        <receiver android:name=".TestSubject.Test7_Background$Test7_BR"/>
+
+        <service android:name=".Background.MEMO3_Service"/>
     </application>
 
 </manifest>

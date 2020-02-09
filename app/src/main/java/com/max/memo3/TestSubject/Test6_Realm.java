@@ -1,24 +1,20 @@
 package com.max.memo3.TestSubject;
 
-import android.app.Notification;
 import android.app.NotificationChannel;
-import android.app.NotificationChannelGroup;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.ColorSpace;
+import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.Parcel;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.android.material.snackbar.Snackbar;
 import com.max.memo3.Background.MEMO3_BroadcastReceiver;
-import com.max.memo3.MainActivity;
+import com.max.memo3.Background.MEMO3_Service;
 import com.max.memo3.R;
 import com.max.memo3.Util.util;
+import com.max.memo3.Util.util_LBR_DefaultActionHandler;
 import com.max.memo3.databinding.Test6FragBinding;
 
 import androidx.annotation.NonNull;
@@ -27,7 +23,6 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.app.Person;
 import androidx.core.app.RemoteInput;
-import androidx.core.app.TaskStackBuilder;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
@@ -40,7 +35,7 @@ public class Test6_Realm extends Fragment {
     //var
     private Test_ViewModel viewModel;
     private Test6FragBinding binding;
-    private Realm realm;
+//    private Realm realm;
 
     //func
     @Override
@@ -67,14 +62,14 @@ public class Test6_Realm extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        Realm.init(getActivity().getApplicationContext());
+//        Realm.init(getActivity().getApplicationContext());
 //        realm = Realm.getDefaultInstance();
-        realm = Realm.getInstance(
-                new RealmConfiguration.Builder()
-                        .name("test6_config")
-                        .inMemory()
-                        .build()
-                );
+//        realm = Realm.getInstance(
+//                new RealmConfiguration.Builder()
+//                        .name("test6_config")
+//                        .inMemory()
+//                        .build()
+//                );
 
         binding.test6Button1.setOnClickListener(this::test6_button1_onclick);
         binding.test6Button2.setOnClickListener(this::test6_button2_onclick);
@@ -94,7 +89,7 @@ public class Test6_Realm extends Fragment {
         //compare with non existing field cause crash
         RealmResults<Test6_RealmObject1> results1;
         try {
-            results1 = realm.where(Test6_RealmObject1.class).lessThan("int1",5).findAll();
+            results1 = util.getRealm().where(Test6_RealmObject1.class).lessThan("int1",5).findAll();
             util.log(results1.size());
 
             results1.addChangeListener((test6_realmObject1s, changeSet) -> util.log("results1 changed "+changeSet.getInsertions().length));
@@ -102,23 +97,20 @@ public class Test6_Realm extends Fragment {
             util.log(e.getMessage());
         }
 
-        realm.beginTransaction();
-        Test6_RealmObject1 managed_realmObject1 = realm.copyToRealm(realmObject1);
-        Test6_RealmObject1 managed_realmObject2 = realm.createObject(Test6_RealmObject1.class);
-        realm.commitTransaction();
+        util.makeRealm_executeTransaction(realm -> {
+            Test6_RealmObject1 managed_realmObject1 = realm.copyToRealm(realmObject1);
+            Test6_RealmObject1 managed_realmObject2 = realm.createObject(Test6_RealmObject1.class);
+        });
 
-        RealmResults<Test6_RealmObject1> results2 = realm.where(Test6_RealmObject1.class).lessThan("int1",5).findAll();
+        RealmResults<Test6_RealmObject1> results2 = util.getRealm().where(Test6_RealmObject1.class).lessThan("int1",5).findAll();
         util.log(results2.size());
 
-        realm.executeTransactionAsync(realm -> realm.createObject(Test6_RealmObject1.class), () -> util.log("async transaction ed"));
+        util.getRealm().executeTransactionAsync(realm -> realm.createObject(Test6_RealmObject1.class), () -> util.log("async transaction ed"));
     }
 
     private void test6_button2_onclick(View view){
         util.log("qwer");
-        realm.executeTransaction(realm1 -> {
-            realm1.deleteAll();
-            util.log("realm deleted all data");
-        });
+        util.makeRealm_reset();
     }
 
     //util test
@@ -141,7 +133,51 @@ public class Test6_Realm extends Fragment {
 //                .setProgress());
 
         //vibrator
-        util.makeVibrate(500);
+//        util.makeVibrate_pattern(new long[]{500,500,500,500,500,500},new int[]{25,0,25,0,225,0});
+
+        //scheduler
+//        util.log("scheduled");
+//        Timer timer = util.makeSchedule_long(5000, () -> util.log("qwer"), 1000);
+//        try {
+//            Thread.sleep(10000);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        timer.cancel();
+//        util.makeSchedule_long(2000,() -> util.log("qwer"));
+//        util.makeSchedule_long(
+//                2020,2,4,1,54,30,
+//                () -> util.log("asdf"),1000,
+//                2020,2,4,1,54,40);
+//        util.makeSchedule_long(
+//                2020,2,4,1,56,1,
+//                () -> util.log("asdf"));
+//        util.makeSchedule_long(3000,() -> util.log("qwer"),1000,5);
+
+        //calender
+//        util.log(util.getCurrTime_string());
+
+        //camera
+//        util.makeFlash_toggle();
+
+        //thread
+//        util.makeThread(() -> util.log("wqwer"));
+
+        //data transfer
+//        int i = util.makeRuntimePacket_send("qwer");
+//        util.log(((String)util.makeRuntimePacket_get(i))+i);
+
+        //local broadcast receiver
+//        util.makeLocalBR_register("qwer",(context, intent) -> util.log("asdf"));
+//        util.makeLocalBR_broadcast("qwer");
+
+        //google sign in
+//        util.log(util.isGoogleSignIned());
+//        util.log(util.isFirebaseSignIned());
+
+//        getContext().registerReceiver(new MEMO3_BroadcastReceiver(),new IntentFilter("test"));
+//        getContext().registerReceiver(new util_LBR_DefaultActionHandler(),new IntentFilter("test"));
+//        getContext().sendBroadcast(new Intent("test"));
     }
 
     //gen 1 noti

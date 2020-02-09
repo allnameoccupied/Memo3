@@ -7,6 +7,7 @@ import android.os.PersistableBundle;
 import com.max.memo3.Util.Custom_Scheduler_Record_JobService;
 import com.max.memo3.Util.util;
 
+@Deprecated
 public class Job_Service extends JobService {
     //var
     public static int time_runned = 0;

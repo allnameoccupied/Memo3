@@ -9,6 +9,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
+@Deprecated
 public class Custom_Scheduler_Record_AlarmManager
         extends RealmObject
 {
