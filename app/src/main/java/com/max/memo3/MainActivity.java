@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.max.memo3.TestSubject.Test0_Main;
 import com.max.memo3.Util.util;
@@ -15,7 +16,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+//        implements NavigationView.OnNavigationItemSelectedListener
+{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,16 +41,19 @@ public class MainActivity extends AppCompatActivity {
 //        NavController navController = Navigation.findNavController(this,)
 
         //floating button
-        FloatingActionButton fab = findViewById(R.id.main_fab);
-        fab.setOnClickListener(view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show());
+//        FloatingActionButton fab = findViewById(R.id.main_fab);
+//        fab.setOnClickListener(view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                .setAction("Action", null).show());
 
         //button
-        Button button = findViewById(R.id.main_button);
-        button.setOnClickListener(v -> {
-            util.log("pressed main button");
-            startActivity(new Intent(getApplicationContext(), Test0_Main.class));
-        });
+//        Button button = findViewById(R.id.main_button);
+//        button.setOnClickListener(v -> {
+//            util.log("pressed main button");
+//            startActivity(new Intent(getApplicationContext(), Test0_Main.class));
+//        });
+
+        //nav drawer
+
     }
 
     @Override

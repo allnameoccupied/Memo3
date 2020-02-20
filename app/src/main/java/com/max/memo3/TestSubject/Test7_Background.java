@@ -1,5 +1,6 @@
 package com.max.memo3.TestSubject;
 
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -11,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.max.memo3.Background.MEMO3_BroadcastReceiver;
 import com.max.memo3.Background.MEMO3_Service;
 import com.max.memo3.R;
 import com.max.memo3.Util.util;
@@ -29,6 +31,8 @@ import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
+
+import static android.content.Intent.EXTRA_CHOSEN_COMPONENT;
 
 public class Test7_Background extends Fragment {
     //var
@@ -66,6 +70,7 @@ public class Test7_Background extends Fragment {
         binding.test7Button5.setOnClickListener(this::test7_button5_onclick);
         binding.test7Button6.setOnClickListener(this::test7_button6_onclick);
         binding.test7Button7.setOnClickListener(this::test7_button7_onclick);
+        binding.test7Button8.setOnClickListener(this::test7_button8_onclick);
     }
 
     //start service
@@ -169,9 +174,11 @@ public class Test7_Background extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             util.log("test7 received");
-            Intent intent1 = new Intent(context, Test0_Main.class);
-            intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(intent1);
+//            Intent intent1 = new Intent(context, Test0_Main.class);
+//            intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//            context.startActivity(intent1);
+            ComponentName clickedComponent = intent.getParcelableExtra(EXTRA_CHOSEN_COMPONENT);
+            util.log(clickedComponent.flattenToString());
         }
     }
     private void test7_button7_onclick(View view){
@@ -180,5 +187,19 @@ public class Test7_Background extends Fragment {
 //                .setOnPressAction("test7",Test7_BR.class)
 //                .setBottomAction(new util.NotiBuilder.NotiBottomActionBuilder("action","label"),null,null));
         util.makeWork_enqueue(TestWorker.class);
+    }
+
+    private void test7_button8_onclick(View view){
+//        util.log("qwer");
+
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_SEND);
+        intent.putExtra(Intent.EXTRA_TEXT, "This is the text to share.");
+        intent.setType("text/plain");
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(),0,new Intent(getContext(), Test7_BR.class),PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Intent intent1 = Intent.createChooser(intent,"title",pendingIntent.getIntentSender());
+        startActivity(intent1);
     }
 }

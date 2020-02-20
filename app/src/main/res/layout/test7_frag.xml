@@ -68,7 +68,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
             android:layout_marginTop="16dp"
-            android:text="test binf"
+            android:text="test bind"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/test7_button4" />
 
@@ -91,5 +91,15 @@
             android:text="test"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/test7_button6" />
+
+        <Button
+            android:id="@+id/test7_button8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="16dp"
+            android:text="share"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/test7_button7" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

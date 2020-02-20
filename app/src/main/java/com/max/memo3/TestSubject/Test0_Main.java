@@ -24,6 +24,15 @@ public class Test0_Main extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test0_main);
+
+        //get share
+        Intent intent = getIntent();
+        String action = intent.getAction();
+        String type = intent.getType();
+        if (Intent.ACTION_SEND.equals(action) && type!=null){
+            util.log(intent.getStringExtra(Intent.EXTRA_TEXT));
+        }
+
 //        viewModel = ViewModelProviders.of(this).get(Test_ViewModel.class);
         viewModel = new ViewModelProvider(this).get(Test_ViewModel.class);
 
