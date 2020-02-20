@@ -11,6 +11,10 @@ import com.max.memo3.Util.util;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.ui.NavigationUI;
 
 import android.view.Menu;
 import android.view.MenuItem;
@@ -34,8 +38,8 @@ public class MainActivity extends AppCompatActivity
         //toolbar 1
         Toolbar toolbar = findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
-//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-//        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         //toolbar 2
 //        NavController navController = Navigation.findNavController(this,)
@@ -53,7 +57,11 @@ public class MainActivity extends AppCompatActivity
 //        });
 
         //nav drawer
-
+        DrawerLayout drawerLayout = findViewById(R.id.activity_main_xml);
+        NavigationView navigationView = findViewById(R.id.nav_drawer_main);
+        NavController navController = Navigation.findNavController(this,R.id.activity_main_frag);
+        NavigationUI.setupActionBarWithNavController(this,navController,drawerLayout);
+        NavigationUI.setupWithNavController(navigationView,navController);
     }
 
     @Override
