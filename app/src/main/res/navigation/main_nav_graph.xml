@@ -8,12 +8,12 @@
     <fragment
         android:id="@+id/mainFragment_nav"
         android:name="com.max.memo3.MainFragment"
-        android:label="MainFragment"
-        tools:layout="@layout/main_frag"/>
+        android:label="Memo3"
+        tools:layout="@layout/main_frag" />
     <fragment
-        android:id="@+id/currListFragment"
+        android:id="@+id/currListFragment_nav"
         android:name="com.max.memo3.CurrListFragment"
-        android:label="currlist_frag"
+        android:label="Playlist"
         tools:layout="@layout/currlist_frag" />
 
 </navigation>

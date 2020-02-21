@@ -9,8 +9,10 @@ import com.google.android.material.snackbar.Snackbar;
 import com.max.memo3.TestSubject.Test0_Main;
 import com.max.memo3.Util.util;
 
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -18,12 +20,14 @@ import androidx.navigation.ui.NavigationUI;
 
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 
-public class MainActivity extends AppCompatActivity
-//        implements NavigationView.OnNavigationItemSelectedListener
-{
+public class MainActivity extends AppCompatActivity {
+    //var
+    DrawerLayout drawerLayout;
 
+    //func
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,8 +42,9 @@ public class MainActivity extends AppCompatActivity
         //toolbar 1
         Toolbar toolbar = findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(false);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
         //toolbar 2
 //        NavController navController = Navigation.findNavController(this,)
@@ -56,12 +61,64 @@ public class MainActivity extends AppCompatActivity
 //            startActivity(new Intent(getApplicationContext(), Test0_Main.class));
 //        });
 
+        //action bar drawer toggle (upper left 3 line button)
+//        ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(this,drawerLayout,R.string.app_name,R.string.app_name){
+//            @Override
+//            public void onDrawerOpened(View drawerView) {
+//                super.onDrawerOpened(drawerView);
+//                util.log("drawer opened");
+//            }
+//
+//            @Override
+//            public void onDrawerClosed(View drawerView) {
+//                super.onDrawerClosed(drawerView);
+//                util.log("drawer closed");
+//            }
+
+//            @Override
+//            public void onDrawerSlide(View drawerView, float slideOffset) {
+//                super.onDrawerSlide(drawerView, slideOffset);
+//                util.log("drawer slide");
+//            }
+//        };
+//        drawerToggle.setToolbarNavigationClickListener(v -> {
+//            if (drawerLayout.isDrawerOpen(GravityCompat.START)){
+//                drawerLayout.closeDrawer(GravityCompat.START);
+//            } else {
+//                drawerLayout.openDrawer(GravityCompat.START);
+//            }
+//        });
+
         //nav drawer
-        DrawerLayout drawerLayout = findViewById(R.id.activity_main_xml);
+        drawerLayout = findViewById(R.id.activity_main_xml);
+//        drawerLayout.addDrawerListener(drawerToggle);
         NavigationView navigationView = findViewById(R.id.nav_drawer_main);
-        NavController navController = Navigation.findNavController(this,R.id.activity_main_frag);
-        NavigationUI.setupActionBarWithNavController(this,navController,drawerLayout);
-        NavigationUI.setupWithNavController(navigationView,navController);
+        NavController navController = Navigation.findNavController(this, R.id.activity_main_frag);
+        NavigationUI.setupActionBarWithNavController(this, navController, drawerLayout);
+        NavigationUI.setupWithNavController(navigationView, navController);
+        navigationView.setNavigationItemSelectedListener(menuItem -> {
+            menuItem.setChecked(true);
+            drawerLayout.closeDrawer(GravityCompat.START);
+            int id = menuItem.getItemId();
+            switch (id) {
+                case R.id.nav_drawer_item1:
+                    navController.navigate(R.id.mainFragment_nav);
+                    break;
+                case R.id.nav_drawer_item2:
+                    navController.navigate(R.id.currListFragment_nav);
+                    break;
+            }
+            return true;
+        });
+
+        //set main menuItem = checked
+//        navigationView.getMenu().getItem(0).setChecked(true);
+    }
+
+    //dont know why but this = press upper left menu will show nav drawer
+    @Override
+    public boolean onSupportNavigateUp() {
+        return NavigationUI.navigateUp(Navigation.findNavController(this, R.id.activity_main_frag),drawerLayout);
     }
 
     @Override
@@ -91,5 +148,14 @@ public class MainActivity extends AppCompatActivity
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)){
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
     }
 }
