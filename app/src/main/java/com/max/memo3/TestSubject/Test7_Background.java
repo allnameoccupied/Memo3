@@ -18,6 +18,9 @@ import com.max.memo3.R;
 import com.max.memo3.Util.util;
 import com.max.memo3.databinding.Test7FragBinding;
 
+import java.io.IOException;
+import java.net.URL;
+import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
 import androidx.annotation.NonNull;
@@ -71,6 +74,7 @@ public class Test7_Background extends Fragment {
         binding.test7Button6.setOnClickListener(this::test7_button6_onclick);
         binding.test7Button7.setOnClickListener(this::test7_button7_onclick);
         binding.test7Button8.setOnClickListener(this::test7_button8_onclick);
+        binding.test7Button9.setOnClickListener(this::test7_button9_onclick);
     }
 
     //start service
@@ -201,5 +205,18 @@ public class Test7_Background extends Fragment {
 
         Intent intent1 = Intent.createChooser(intent,"title",pendingIntent.getIntentSender());
         startActivity(intent1);
+    }
+
+    //get device data
+    private void test7_button9_onclick(View view){
+//        util.getDevice_NetworkData();
+        util.makeThread(() -> {
+            try {
+                Scanner s = new Scanner(new URL("https://api.ipify.org").openStream(), "UTF-8").useDelimiter("\\A");
+                util.log("My current IP address is " + s.next());
+            } catch (Throwable e) {
+                util.log(e.toString());
+            }
+        });
     }
 }

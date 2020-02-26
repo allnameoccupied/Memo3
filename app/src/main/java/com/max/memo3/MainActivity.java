@@ -3,13 +3,16 @@ package com.max.memo3;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.max.memo3.TestSubject.Test0_Main;
 import com.max.memo3.Util.util;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
@@ -22,10 +25,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
     //var
-    DrawerLayout drawerLayout;
+    private DrawerLayout drawerLayout;
+    private NavigationView navigationView;
 
     //func
     @Override
@@ -92,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
         //nav drawer
         drawerLayout = findViewById(R.id.activity_main_xml);
 //        drawerLayout.addDrawerListener(drawerToggle);
-        NavigationView navigationView = findViewById(R.id.nav_drawer_main);
+        navigationView = findViewById(R.id.nav_drawer_main);
         NavController navController = Navigation.findNavController(this, R.id.activity_main_frag);
         NavigationUI.setupActionBarWithNavController(this, navController, drawerLayout);
         NavigationUI.setupWithNavController(navigationView, navController);
@@ -113,12 +120,56 @@ public class MainActivity extends AppCompatActivity {
 
         //set main menuItem = checked
 //        navigationView.getMenu().getItem(0).setChecked(true);
+
+        //nav drawer header set name + set onClick login
+        if (util.isGoogleSignIned()){
+            ImageView imageView = navigationView.getHeaderView(0).findViewById(R.id.nav_drawer_header_id).findViewById(R.id.nav_drawer_header_icon);
+            Glide.with(this).load(util.getGoogleAccount().getPhotoUrl()).circleCrop().into(imageView);
+            ((TextView)navigationView.getHeaderView(0).findViewById(R.id.nav_drawer_header_id).findViewById(R.id.nav_drawer_header_name)).setText(util.getGoogleAccount().getDisplayName());
+            ((TextView)navigationView.getHeaderView(0).findViewById(R.id.nav_drawer_header_id).findViewById(R.id.nav_drawer_header_email)).setText(util.getGoogleAccount().getEmail());
+        }
+        ((LinearLayout)navigationView.getHeaderView(0).findViewById(R.id.nav_drawer_header_id)).setOnClickListener(v -> {
+            if (util.isGoogleSignIned()){
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage("You sure you want to logout?");
+                builder.setPositiveButton("Yes",(dialog, which) -> {
+                    dialog.dismiss();
+                    util.makeGoogleSignIn_signOut();
+                    ((ImageView)navigationView.getHeaderView(0).findViewById(R.id.nav_drawer_header_id).findViewById(R.id.nav_drawer_header_icon)).setImageResource(R.mipmap.ic_launcher_round);
+                    ((TextView)navigationView.getHeaderView(0).findViewById(R.id.nav_drawer_header_id).findViewById(R.id.nav_drawer_header_name)).setText("Not signed in");
+                    ((TextView)navigationView.getHeaderView(0).findViewById(R.id.nav_drawer_header_id).findViewById(R.id.nav_drawer_header_email)).setText("Not signed in");
+                });
+                builder.setNegativeButton("No",(dialog, which) -> {
+                    dialog.dismiss();
+                });
+                builder.create().show();
+            } else {
+                util.makeGoogleSignIn_signIn();
+            }
+        });
+
     }
 
     //dont know why but this = press upper left menu will show nav drawer
     @Override
     public boolean onSupportNavigateUp() {
         return NavigationUI.navigateUp(Navigation.findNavController(this, R.id.activity_main_frag),drawerLayout);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode){
+            case util.googleSignInActivityRequestCode:
+                util.makeGoogleSignIn_handleSignIn(data);
+                util.log(util.getGoogleAccount().getPhotoUrl().toString());
+                ImageView imageView = navigationView.getHeaderView(0).findViewById(R.id.nav_drawer_header_id).findViewById(R.id.nav_drawer_header_icon);
+                Glide.with(this).load(util.getGoogleAccount().getPhotoUrl()).circleCrop().into(imageView);
+                ((TextView)navigationView.getHeaderView(0).findViewById(R.id.nav_drawer_header_id).findViewById(R.id.nav_drawer_header_name)).setText(util.getGoogleAccount().getDisplayName());
+                ((TextView)navigationView.getHeaderView(0).findViewById(R.id.nav_drawer_header_id).findViewById(R.id.nav_drawer_header_email)).setText(util.getGoogleAccount().getEmail());
+                break;
+        }
     }
 
     @Override
