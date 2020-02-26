@@ -126,6 +126,7 @@ public final class util {
             init_Firebase();
             init_Firestore();
             init_Service();
+            init_Network();
 
 //            init_Sensor();
             isInited = true;
@@ -1188,6 +1189,13 @@ public final class util {
 //        return SP_service.sensor_value;
 //    }
 //
+    //NETWORK
+    private static ConnectivityManager networkConnectManager;
+    private static void init_Network(){
+         networkConnectManager = ((ConnectivityManager) APP_CONTEXT.getSystemService(Context.CONNECTIVITY_SERVICE));
+    }
+    
+
     //DEVICE DATA
     public static void getDevice_DeviceData() {
         log("Below is Device Data Information");
