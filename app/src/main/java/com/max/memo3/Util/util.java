@@ -1194,6 +1194,10 @@ public final class util {
     private static void init_Network(){
          networkConnectManager = ((ConnectivityManager) APP_CONTEXT.getSystemService(Context.CONNECTIVITY_SERVICE));
     }
+    public static String getNetwork_type(){
+        NetworkInfo info = networkConnectManager.getActiveNetworkInfo();
+        if ()
+    }
     
 
     //DEVICE DATA

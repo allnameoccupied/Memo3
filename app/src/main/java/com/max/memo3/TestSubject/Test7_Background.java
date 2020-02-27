@@ -209,14 +209,14 @@ public class Test7_Background extends Fragment {
 
     //get device data
     private void test7_button9_onclick(View view){
-//        util.getDevice_NetworkData();
-        util.makeThread(() -> {
-            try {
-                Scanner s = new Scanner(new URL("https://api.ipify.org").openStream(), "UTF-8").useDelimiter("\\A");
-                util.log("My current IP address is " + s.next());
-            } catch (Throwable e) {
-                util.log(e.toString());
-            }
-        });
+        util.getDevice_NetworkData();
+//        util.makeThread(() -> {
+//            try {
+//                Scanner s = new Scanner(new URL("https://api.ipify.org").openStream(), "UTF-8").useDelimiter("\\A");
+//                util.log("My current IP address is " + s.next());
+//            } catch (Throwable e) {
+//                util.log(e.toString());
+//            }
+//        });
     }
 }
